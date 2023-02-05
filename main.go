@@ -11,6 +11,8 @@ import (
 	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func initDB() {
@@ -55,8 +57,21 @@ func initHandlers(router *mux.Router) {
 
 	router.HandleFunc("/group", controller.CreateGroup).Methods("POST")
 	router.HandleFunc("/groups", controller.GetAllGroup).Methods("GET")
+
+	// Swagger
+	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 }
 
+// @title Orders API
+// @version 1.0
+// @description This is a sample serice for managing orders
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.email soberkoder@swagger.io
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:8888
+// @BasePath /
 func main() {
 	initDB()
 

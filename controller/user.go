@@ -7,6 +7,8 @@ import (
 	"time2do/database"
 	"time2do/entity"
 
+	_ "time2do/docs"
+
 	"github.com/gorilla/mux"
 )
 
@@ -29,6 +31,13 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
+// @Summary Get details of all users
+// @Description Get details of all users
+// @Tags user
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} entity.User
+// @Router /users [get]
 func GetAllUser(w http.ResponseWriter, r *http.Request) {
 	var users []entity.User
 	database.Connector.Find(&users)
