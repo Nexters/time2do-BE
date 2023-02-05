@@ -5,7 +5,11 @@
 ### Data
 
 - **<u>user</u>**
-  - id
-  - create_time
-  - username (닉네임)
-  - password
+
+```json
+{
+    id: 1234    // int
+    username: "투두두01"    // string 닉네임
+    password: "passw0rd"    // string 비밀번호
+}
+```

@@ -9,6 +9,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type Config struct {
+	User     string
+	Password string
+	Host     string
+	Port     string
+	DB       string
+}
+
+var GetConnectionString = func(config Config) string {
+	connectionString := fmt.Sprintf("%s:%s", config.User, config.Password)
+	return connectionString
+}
+
 func Connect() *sql.DB {
 	// load .env file
 	err := godotenv.Load("../.env")
