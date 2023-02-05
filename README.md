@@ -1,4 +1,4 @@
-# time2do Backend
+# Time2Do Backend
 
 <br/>
 
@@ -24,7 +24,7 @@ bash run.sh
 
 **<u>user</u>**
 
-```json
+```bash
 {
     id: 1234    // int
     username: "투두두01"    // string 닉네임
