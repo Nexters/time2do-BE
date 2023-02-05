@@ -3,9 +3,9 @@ package entity
 import "time"
 
 type Group struct {
-	ID           int       `json:"id"`
+	ID           uint      `json:"id"`
 	Name         string    `json:"name"`
-	Maker        string    `json:"makerId"`
+	MakerID      uint      `json:"makerId"`
 	Participants string    `json:"participants`
 	Tags         string    `json:"tags"`
 	SetTime      time.Time `json:"setTime"`

@@ -34,4 +34,14 @@ bash run.sh
 
 <br/>
 
-**<u>timer</u>**
+**<u>group</u>**
+```bash
+{
+    "id": 1,
+    "name": "1번다운타이머",
+    "makerId": 1234,
+    "Participants": "1234.1235.1236",
+    "tags": "열정.개발.디자인",
+    "setTime": "0001-01-01T00:00:00Z"
+}
+```
