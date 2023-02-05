@@ -31,7 +31,7 @@ func initDB() {
 	}
 
 	connectionString := database.GetConnectionString(config)
-	log.Println("[+] Connecton String Check:", connectionString)
+	log.Println("[+] Connection String Check:", connectionString)
 	connectErr := database.Connect(connectionString)
 	if connectErr != nil {
 		panic(connectErr.Error())
@@ -45,9 +45,11 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Time2Do Server is healthy."))
 }
 
-func initaliseHandlers(router *mux.Router) {
+func initHandlers(router *mux.Router) {
 	router.HandleFunc("/", healthCheck).Methods("GET")
+	router.HandleFunc("/user", controller.CreateUser).Methods("POST")
 	router.HandleFunc("/users", controller.GetAllUser).Methods("GET")
+
 }
 
 func main() {
@@ -55,6 +57,6 @@ func main() {
 
 	log.Println("[*] Starting the HTTP server on port 8888")
 	router := mux.NewRouter().StrictSlash(true)
-	initaliseHandlers(router)
+	initHandlers(router)
 	log.Fatal(http.ListenAndServe(":8888", router))
 }
