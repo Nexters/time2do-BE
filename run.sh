@@ -1,1 +1,1 @@
-go run main.go
+go run main.go -p 8888
