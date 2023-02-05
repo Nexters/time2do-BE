@@ -39,7 +39,14 @@ func initDB() {
 	database.Migrate(&entity.User{})
 }
 
+func healthCheck(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	log.Println(r.Header)
+	w.Write([]byte("Time2Do Server is healthy."))
+}
+
 func initaliseHandlers(router *mux.Router) {
+	router.HandleFunc("/", healthCheck).Methods("GET")
 	router.HandleFunc("/users", controller.GetAllUser).Methods("GET")
 }
 
