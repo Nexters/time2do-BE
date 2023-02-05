@@ -48,6 +48,7 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 func initHandlers(router *mux.Router) {
 	router.HandleFunc("/", healthCheck).Methods("GET")
 	router.HandleFunc("/user", controller.CreateUser).Methods("POST")
+	router.HandleFunc("/user/{id}", controller.GetUserByID).Methods("GET")
 	router.HandleFunc("/users", controller.GetAllUser).Methods("GET")
 
 }
