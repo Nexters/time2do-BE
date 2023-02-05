@@ -36,7 +36,9 @@ func initDB() {
 	if connectErr != nil {
 		panic(connectErr.Error())
 	}
-	database.Migrate(&entity.User{})
+
+	database.UserMigrate(&entity.User{})
+	database.GroupMigrate(&entity.Group{})
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
@@ -51,6 +53,8 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/user/{id}", controller.GetUserByID).Methods("GET")
 	router.HandleFunc("/users", controller.GetAllUser).Methods("GET")
 
+	router.HandleFunc("/group", controller.CreateGroup).Methods("POST")
+	router.HandleFunc("/groups", controller.GetAllGroup).Methods("GET")
 }
 
 func main() {

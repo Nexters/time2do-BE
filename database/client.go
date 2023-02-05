@@ -21,7 +21,12 @@ func Connect(connectionString string) error {
 }
 
 // Migrate create/updates database table
-func Migrate(table *entity.User) {
+func UserMigrate(table *entity.User) {
 	Connector.AutoMigrate(&table)
-	log.Println("[+] User Table migrated")
+	log.Println("[+] MySQL: User Table migrated")
+}
+
+func GroupMigrate(table *entity.Group) {
+	Connector.AutoMigrate(&table)
+	log.Println("[+] MySQL: Group Table migrated")
 }
