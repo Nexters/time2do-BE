@@ -1,5 +1,5 @@
 # Use the official Golang image as the base image
-FROM golang:latest
+FROM golang:1.20
 
 # Set the working directory
 WORKDIR /go/src/app
@@ -11,7 +11,7 @@ COPY . .
 RUN go build -o server .
 
 # Expose the port that the server will listen on
-EXPOSE 8080
+EXPOSE 8888
 
 # Start the server when the container is run
 CMD ["./main"]
