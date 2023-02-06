@@ -30,3 +30,8 @@ func GroupMigrate(table *entity.Group) {
 	Connector.AutoMigrate(&table)
 	log.Println("[+] MySQL: Group Table migrated")
 }
+
+func TaskMigrate(table *entity.Task) {
+	Connector.AutoMigrate(&table)
+	log.Println("[+] MySQL: Task Table migrated")
+}

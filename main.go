@@ -41,6 +41,7 @@ func initDB() {
 
 	database.UserMigrate(&entity.User{})
 	database.GroupMigrate(&entity.Group{})
+	database.TaskMigrate(&entity.Task{})
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
