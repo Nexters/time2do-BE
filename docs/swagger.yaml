@@ -1,14 +1,4 @@
 basePath: /
-definitions:
-  entity.User:
-    properties:
-      id:
-        type: integer
-      password:
-        type: string
-      username:
-        type: string
-    type: object
 host: localhost:8888
 info:
   contact:
@@ -22,19 +12,34 @@ info:
   title: Orders API
   version: "1.0"
 paths:
+  /user:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      summary: 유저 생성하기
+      tags:
+      - user
+  /user/{id}:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      summary: 유저 ID 로 조회하기
+      tags:
+      - user
   /users:
     get:
       consumes:
       - application/json
-      description: Get details of all users
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entity.User'
-      summary: Get details of all users
+      responses: {}
+      summary: 모든 유저 정보 모두 불러오기
       tags:
       - user
 swagger: "2.0"

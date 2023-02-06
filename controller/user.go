@@ -12,6 +12,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// @Summary 유저 생성하기
+// @Tags user
+// @Accept  json
+// @Produce  json
+// @Router /user [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := ioutil.ReadAll(r.Body)
 	var user entity.User
@@ -22,6 +27,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
+// @Summary 유저 ID 로 조회하기
+// @Tags user
+// @Accept  json
+// @Produce  json
+// @Router /user/{id} [get]
 func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
@@ -31,12 +41,10 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-// @Summary Get details of all users
-// @Description Get details of all users
+// @Summary 아무 조건 없이 모든 User 불러오기
 // @Tags user
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} entity.User
 // @Router /users [get]
 func GetAllUser(w http.ResponseWriter, r *http.Request) {
 	var users []entity.User

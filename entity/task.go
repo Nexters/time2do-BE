@@ -1,6 +1,6 @@
 package entity
 
-type ToDo struct {
+type Task struct {
 	ID              uint   `json:"id"`
 	UserID          string `json:"userId"`
 	Lock            int    `json:"lock"`
@@ -9,5 +9,5 @@ type ToDo struct {
 	CompletedTime   string `json:"completedTime"`
 	CompletedStatus string `json:"completedStatus"`
 	DeletedTime     string `json:"deletedTime"`
-	Modified_time   string `json:"modified_time"`
+	Modified_time   string `json:"modifiedTime"`
 }

@@ -23,9 +23,8 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/users": {
-            "get": {
-                "description": "Get details of all users",
+        "/user": {
+            "post": {
                 "consumes": [
                     "application/json"
                 ],
@@ -35,31 +34,38 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "Get details of all users",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entity.User"
-                        }
-                    }
-                }
+                "summary": "유저 생성하기",
+                "responses": {}
             }
-        }
-    },
-    "definitions": {
-        "entity.User": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
+        },
+        "/user/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "유저 ID 로 조회하기",
+                "responses": {}
+            }
+        },
+        "/users": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "모든 유저 정보 모두 불러오기",
+                "responses": {}
             }
         }
     }
