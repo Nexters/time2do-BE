@@ -12,6 +12,46 @@ info:
   title: Orders API
   version: "1.0"
 paths:
+  /group:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      summary: 그룹 생성하기
+      tags:
+      - Group (다운 타이머)
+  /groups:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      summary: 그룹 조회하기
+      tags:
+      - Group (다운 타이머)
+  /task:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      summary: 할일 생성하기
+      tags:
+      - ToDo (Task)
+  /tasks:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      summary: 아무 조건 없이 모든 Task 불러오기
+      tags:
+      - ToDo (Task)
   /user:
     post:
       consumes:
@@ -21,7 +61,7 @@ paths:
       responses: {}
       summary: 유저 생성하기
       tags:
-      - user
+      - User
   /user/{id}:
     get:
       consumes:
@@ -31,7 +71,7 @@ paths:
       responses: {}
       summary: 유저 ID 로 조회하기
       tags:
-      - user
+      - User
   /users:
     get:
       consumes:
@@ -39,7 +79,7 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: 모든 유저 정보 모두 불러오기
+      summary: 아무 조건 없이 모든 User 불러오기
       tags:
-      - user
+      - User
 swagger: "2.0"

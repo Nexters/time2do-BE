@@ -23,6 +23,66 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/group": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Group (다운 타이머)"
+                ],
+                "summary": "그룹 생성하기",
+                "responses": {}
+            }
+        },
+        "/groups": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Group (다운 타이머)"
+                ],
+                "summary": "그룹 조회하기",
+                "responses": {}
+            }
+        },
+        "/task": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ToDo (Task)"
+                ],
+                "summary": "할일 생성하기",
+                "responses": {}
+            }
+        },
+        "/tasks": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ToDo (Task)"
+                ],
+                "summary": "아무 조건 없이 모든 Task 불러오기",
+                "responses": {}
+            }
+        },
         "/user": {
             "post": {
                 "consumes": [
@@ -32,7 +92,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "유저 생성하기",
                 "responses": {}
@@ -47,7 +107,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "유저 ID 로 조회하기",
                 "responses": {}
@@ -62,9 +122,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
-                "summary": "모든 유저 정보 모두 불러오기",
+                "summary": "아무 조건 없이 모든 User 불러오기",
                 "responses": {}
             }
         }

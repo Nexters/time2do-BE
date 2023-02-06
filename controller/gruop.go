@@ -8,6 +8,11 @@ import (
 	"time2do/entity"
 )
 
+// @Summary 그룹 생성하기
+// @Tags Group (다운 타이머)
+// @Accept  json
+// @Produce  json
+// @Router /group [post]
 func CreateGroup(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := ioutil.ReadAll(r.Body)
 	var group entity.Group
@@ -18,6 +23,11 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(group)
 }
 
+// @Summary 그룹 조회하기
+// @Tags Group (다운 타이머)
+// @Accept  json
+// @Produce  json
+// @Router /groups [get]
 func GetAllGroup(w http.ResponseWriter, r *http.Request) {
 	var gruops []entity.Group
 	database.Connector.Find(&gruops)

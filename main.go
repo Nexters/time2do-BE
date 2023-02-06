@@ -58,6 +58,9 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/group", controller.CreateGroup).Methods("POST")
 	router.HandleFunc("/groups", controller.GetAllGroup).Methods("GET")
 
+	router.HandleFunc("/task", controller.CreateTask).Methods("POST")
+	router.HandleFunc("/tasks", controller.GetAllTask).Methods("GET")
+
 	// Swagger
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 }

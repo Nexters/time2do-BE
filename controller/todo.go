@@ -9,7 +9,7 @@ import (
 )
 
 // @Summary 할일 생성하기
-// @Tags task
+// @Tags ToDo (Task)
 // @Accept  json
 // @Produce  json
 // @Router /task [post]
@@ -24,7 +24,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary 아무 조건 없이 모든 Task 불러오기
-// @Tags user
+// @Tags ToDo (Task)
 // @Accept  json
 // @Produce  json
 // @Router /tasks [get]
