@@ -29,9 +29,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	log.Println(user.UserName)
 	log.Println(user.Password)
 
-	database.Connector.Create(user)
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	if results := database.Connector.Create(user); results.Error != nil {
+		w.WriteHeader(http.StatusConflict)
+		json.NewEncoder(w).Encode("이미 존재하는 uid 입니다")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(user)
 }
 
