@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time2do/database"
 	"time2do/entity"
@@ -21,6 +22,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := ioutil.ReadAll(r.Body)
 	var user entity.User
 	json.Unmarshal(requestBody, &user)
+
+	// logging for debug
+	log.Println(string(requestBody))
+	log.Println(user.ID)
+	log.Println(user.UserName)
+	log.Println(user.Password)
+
 	database.Connector.Create(user)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
