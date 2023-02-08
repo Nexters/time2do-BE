@@ -2,7 +2,7 @@ package entity
 
 type Task struct {
 	ID              uint   `json:"id"`
-	UserID          string `json:"userId"`
+	UserID          uint   `json:"userId"`
 	Lock            int    `json:"lock"`
 	Text            string `json:"text"`
 	CreatedTime     string `json:"createdTime"`

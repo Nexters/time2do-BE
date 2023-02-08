@@ -61,6 +61,7 @@ func initHandlers(router *mux.Router) {
 
 	router.HandleFunc("/task", controller.CreateTask).Methods("POST")
 	router.HandleFunc("/tasks", controller.GetAllTask).Methods("GET")
+	router.HandleFunc("/task/{id}", controller.GetTaskByID).Methods("GET")
 
 	// Swagger
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)

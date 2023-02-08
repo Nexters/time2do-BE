@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time2do/database"
 	"time2do/entity"
+
+	"github.com/gorilla/mux"
 )
 
 // @Summary 할일 생성하기
@@ -34,4 +36,15 @@ func GetAllTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(tasks)
+}
+
+// @Summary Task ID 를 통해 Task 불러오기
+// @Tags ToDo (Task)
+func GetTaskByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["id"]
+	var task entity.Task
+	database.Connector.First(&task, key)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(task)
 }
