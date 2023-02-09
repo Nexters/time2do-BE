@@ -13,5 +13,5 @@ RUN go build -o server .
 # Expose the port that the server will listen on
 EXPOSE 8888
 
-# Start the server when the container is run
-CMD ["./main"]
+RUN chmod +x docker-entrypoint.sh wait-for-it.sh
+ENTRYPOINT ./docker-entrypoint.sh

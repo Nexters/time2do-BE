@@ -9,6 +9,7 @@ import (
 	"time2do/entity"
 
 	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 
@@ -23,7 +24,6 @@ func initDB() {
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
-
 	config := database.Config{
 		User:     os.Getenv("MYSQL_USER"),
 		Password: os.Getenv("MYSQL_PASSWORD"),
@@ -42,6 +42,7 @@ func initDB() {
 	database.UserMigrate(&entity.User{})
 	database.GroupMigrate(&entity.Group{})
 	database.TaskMigrate(&entity.Task{})
+
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
@@ -83,5 +84,5 @@ func main() {
 	log.Println("[*] Starting the HTTP server on port 8888")
 	router := mux.NewRouter().StrictSlash(true)
 	initHandlers(router)
-	log.Fatal(http.ListenAndServe(":8888", router))
+	log.Fatal(http.ListenAndServe(":8888", handlers.CORS()(router)))
 }

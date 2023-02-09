@@ -3,8 +3,6 @@ services:
   time2do-db:
     image: mysql:8.0
     container_name: time2do-mysql
-    ports:
-      - 33336:3306
     environment:
       MYSQL_HOST: "${MYSQL_HOST}"
       MYSQL_PORT: "${MYSQL_PORT}"
@@ -17,3 +15,22 @@ services:
       - ./mysql/conf.d:/etc/mysql/conf.data
       - ./mysql/data:/var/lib/mysql
       - ./mysql/initdb.d:/docker-entrypoint-initdb.d
+  time2-do-go:
+      image: golang:1.20
+      container_name: time2do-go
+      build:
+        context: .
+      depends_on:
+        - time2do-db
+      environment:
+        MYSQL_HOST: "time2do-db"
+        MYSQL_PORT: "${MYSQL_PORT}"
+        MYSQL_USER: "${MYSQL_USER}"
+        MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+        MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}" 
+        MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      ports:
+        - "8888:8888"
+      expose:
+        - "8888"
+      restart: always
