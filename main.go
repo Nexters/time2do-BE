@@ -40,8 +40,9 @@ func initDB() {
 	}
 
 	database.UserMigrate(&entity.User{})
-	database.GroupMigrate(&entity.Group{})
-	database.TaskMigrate(&entity.Task{})
+	database.GroupMigrate(&entity.Timer{})
+	database.TaskMigrate(&entity.ToDo{})
+	database.ParticipateMigrate(&entity.Participant{})
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
@@ -59,9 +60,9 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/group", controller.CreateGroup).Methods("POST")
 	router.HandleFunc("/groups", controller.GetAllGroup).Methods("GET")
 
-	router.HandleFunc("/task", controller.CreateTask).Methods("POST")
-	router.HandleFunc("/tasks", controller.GetAllTask).Methods("GET")
-	router.HandleFunc("/task/{id}", controller.GetTaskByID).Methods("GET")
+	router.HandleFunc("/task", controller.CreateToDo).Methods("POST")
+	router.HandleFunc("/tasks", controller.GetAllToDo).Methods("GET")
+	router.HandleFunc("/task/{id}", controller.GetToDoById).Methods("GET")
 
 	// Swagger
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)

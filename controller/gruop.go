@@ -15,7 +15,7 @@ import (
 // @Router /group [post]
 func CreateGroup(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := ioutil.ReadAll(r.Body)
-	var group entity.Group
+	var group entity.Timer
 	json.Unmarshal(requestBody, &group)
 	database.Connector.Create(group)
 	w.Header().Set("Content-Type", "application/json")
@@ -29,9 +29,9 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Router /groups [get]
 func GetAllGroup(w http.ResponseWriter, r *http.Request) {
-	var gruops []entity.Group
-	database.Connector.Find(&gruops)
+	var timers []entity.Timer
+	database.Connector.Find(&timers)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(gruops)
+	json.NewEncoder(w).Encode(timers)
 }

@@ -15,9 +15,9 @@ import (
 // @Accept  json
 // @Produce  json
 // @Router /task [post]
-func CreateTask(w http.ResponseWriter, r *http.Request) {
+func CreateToDo(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := ioutil.ReadAll(r.Body)
-	var task entity.Task
+	var task entity.ToDo
 	json.Unmarshal(requestBody, &task)
 	database.Connector.Create(task)
 	w.Header().Set("Content-Type", "application/json")
@@ -25,25 +25,25 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(task)
 }
 
-// @Summary 아무 조건 없이 모든 Task 불러오기
+// @Summary 아무 조건 없이 모든 ToDo 불러오기
 // @Tags ToDo (Task)
 // @Accept  json
 // @Produce  json
 // @Router /tasks [get]
-func GetAllTask(w http.ResponseWriter, r *http.Request) {
-	var tasks []entity.Task
+func GetAllToDo(w http.ResponseWriter, r *http.Request) {
+	var tasks []entity.ToDo
 	database.Connector.Find(&tasks)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(tasks)
 }
 
-// @Summary Task ID 를 통해 Task 불러오기
+// @Summary ToDo Id 를 통해 ToDo 불러오기
 // @Tags ToDo (Task)
-func GetTaskByID(w http.ResponseWriter, r *http.Request) {
+func GetToDoById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
-	var task entity.Task
+	var task entity.ToDo
 	database.Connector.First(&task, key)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(task)
