@@ -26,12 +26,17 @@ func UserMigrate(table *entity.User) {
 	log.Println("[+] MySQL: User Table migrated")
 }
 
-func GroupMigrate(table *entity.Group) {
+func TimerMigrate(table *entity.Timer) {
 	Connector.AutoMigrate(&table)
 	log.Println("[+] MySQL: Group Table migrated")
 }
 
-func TaskMigrate(table *entity.Task) {
+func ToDoMigrate(table *entity.ToDo) {
 	Connector.AutoMigrate(&table)
-	log.Println("[+] MySQL: Task Table migrated")
+	log.Println("[+] MySQL: ToDo Table migrated")
+}
+
+func ParticipantMigrate(table *entity.Participant) {
+	Connector.AutoMigrate(&table)
+	log.Println("[+] MySQL: Participant Table migrated")
 }

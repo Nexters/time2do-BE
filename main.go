@@ -40,15 +40,16 @@ func initDB() {
 	}
 
 	database.UserMigrate(&entity.User{})
-	database.GroupMigrate(&entity.Group{})
-	database.TaskMigrate(&entity.Task{})
+	database.TimerMigrate(&entity.Timer{})
+	database.ToDoMigrate(&entity.ToDo{})
+	database.ParticipantMigrate(&entity.Participant{})
 
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	log.Println(r.Header)
-	w.Write([]byte("Time2Do Server is healthy."))
+	_, _ = w.Write([]byte("Time2Do Server is healthy."))
 }
 
 func initHandlers(router *mux.Router) {
@@ -57,8 +58,8 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/user/{id}", controller.GetUserByID).Methods("GET")
 	router.HandleFunc("/users", controller.GetAllUser).Methods("GET")
 
-	router.HandleFunc("/group", controller.CreateGroup).Methods("POST")
-	router.HandleFunc("/groups", controller.GetAllGroup).Methods("GET")
+	router.HandleFunc("/group", controller.CreateTimer).Methods("POST")
+	router.HandleFunc("/groups", controller.GetAllTimers).Methods("GET")
 
 	router.HandleFunc("/task", controller.CreateTask).Methods("POST")
 	router.HandleFunc("/tasks", controller.GetAllTask).Methods("GET")
