@@ -2,7 +2,7 @@ package controller
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"time2do/database"
@@ -19,24 +19,24 @@ import (
 // @Produce  json
 // @Router /user [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	requestBody, _ := ioutil.ReadAll(r.Body)
+	requestBody, _ := io.ReadAll(r.Body)
 	var user entity.User
-	json.Unmarshal(requestBody, &user)
+	_ = json.Unmarshal(requestBody, &user)
 
 	// logging for debug
 	log.Println(string(requestBody))
-	log.Println(user.ID)
+	log.Println(user.Id)
 	log.Println(user.UserName)
 	log.Println(user.Password)
 
 	w.Header().Set("Content-Type", "application/json")
 	if results := database.Connector.Create(user); results.Error != nil {
 		w.WriteHeader(http.StatusConflict)
-		json.NewEncoder(w).Encode("이미 존재하는 uid 입니다")
+		_ = json.NewEncoder(w).Encode("이미 존재하는 uid 입니다")
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
+	_ = json.NewEncoder(w).Encode(user)
 }
 
 // @Summary 유저 ID 로 조회하기
@@ -50,7 +50,7 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	var user entity.User
 	database.Connector.First(&user, key)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	_ = json.NewEncoder(w).Encode(user)
 }
 
 // @Summary 아무 조건 없이 모든 User 불러오기
@@ -63,5 +63,5 @@ func GetAllUser(w http.ResponseWriter, r *http.Request) {
 	database.Connector.Find(&users)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(users)
+	_ = json.NewEncoder(w).Encode(users)
 }

@@ -1,17 +1,15 @@
 package main
 
 import (
+	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 	"time2do/controller"
 	"time2do/database"
-	"time2do/entity"
-
-	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -38,6 +36,7 @@ func initDB() {
 	if connectErr != nil {
 		panic(connectErr.Error())
 	}
+<<<<<<< HEAD
 
 	database.UserMigrate(&entity.User{})
 <<<<<<< HEAD
@@ -49,12 +48,14 @@ func initDB() {
 	database.TaskMigrate(&entity.ToDo{})
 	database.ParticipateMigrate(&entity.Participant{})
 >>>>>>> origin/sa/formatting
+=======
+>>>>>>> origin/feature
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	log.Println(r.Header)
-	w.Write([]byte("Time2Do Server is healthy."))
+	_, _ = w.Write([]byte("Time2Do Server is healthy."))
 }
 
 func initHandlers(router *mux.Router) {
@@ -63,12 +64,14 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/user/{id}", controller.GetUserByID).Methods("GET")
 	router.HandleFunc("/users", controller.GetAllUser).Methods("GET")
 
-	router.HandleFunc("/group", controller.CreateGroup).Methods("POST")
-	router.HandleFunc("/groups", controller.GetAllGroup).Methods("GET")
+	router.HandleFunc("/group", controller.CreateTimer).Methods("POST")
+	router.HandleFunc("/groups", controller.GetAllTimers).Methods("GET")
 
 	router.HandleFunc("/task", controller.CreateToDo).Methods("POST")
 	router.HandleFunc("/tasks", controller.GetAllToDo).Methods("GET")
 	router.HandleFunc("/task/{id}", controller.GetToDoById).Methods("GET")
+
+	router.HandleFunc("/report/{id}", controller.ViewReport).Methods("GET")
 
 	// Swagger
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
