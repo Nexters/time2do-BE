@@ -1,17 +1,15 @@
 package main
 
 import (
+	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 	"time2do/controller"
 	"time2do/database"
-	"time2do/entity"
-
-	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -38,12 +36,6 @@ func initDB() {
 	if connectErr != nil {
 		panic(connectErr.Error())
 	}
-
-	database.UserMigrate(&entity.User{})
-	database.TimerMigrate(&entity.Timer{})
-	database.ToDoMigrate(&entity.ToDo{})
-	database.ParticipantMigrate(&entity.Participant{})
-
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +56,8 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/task", controller.CreateTask).Methods("POST")
 	router.HandleFunc("/tasks", controller.GetAllTask).Methods("GET")
 	router.HandleFunc("/task/{id}", controller.GetTaskByID).Methods("GET")
+
+	router.HandleFunc("/report/{id}", controller.ViewReport).Methods("GET")
 
 	// Swagger
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
