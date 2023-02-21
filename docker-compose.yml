@@ -3,6 +3,8 @@ services:
   time2do-db:
     image: mysql:8.0
     container_name: time2do-mysql
+    ports:
+      - "33336:3306"
     environment:
       MYSQL_HOST: "${MYSQL_HOST}"
       MYSQL_PORT: "${MYSQL_PORT}"
@@ -35,4 +37,4 @@ services:
         - "8888:8888"
       expose:
         - "8888"
-      restart: always
+      # restart: always
