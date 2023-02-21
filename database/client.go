@@ -1,9 +1,10 @@
 package database
 
 import (
+	"log"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
 )
 
 var Connector *gorm.DB
@@ -18,27 +19,24 @@ func Connect(connectionString string) error {
 	log.Println("[+] Connection was successful")
 	return nil
 }
-<<<<<<< HEAD
 
 // Migrate create/updates database table
-func UserMigrate(table *entity.User) {
-	Connector.AutoMigrate(&table)
-	log.Println("[+] MySQL: User Table migrated")
-}
+// func UserMigrate(table *entity.User) {
+// 	Connector.AutoMigrate(&table)
+// 	log.Println("[+] MySQL: User Table migrated")
+// }
 
-func GroupMigrate(table *entity.Timer) {
-	Connector.AutoMigrate(&table)
-	log.Println("[+] MySQL: Group Table migrated")
-}
+// func GroupMigrate(table *entity.Timer) {
+// 	Connector.AutoMigrate(&table)
+// 	log.Println("[+] MySQL: Group Table migrated")
+// }
 
-func TaskMigrate(table *entity.ToDo) {
-	Connector.AutoMigrate(&table)
-	log.Println("[+] MySQL: Task Table migrated")
-}
+// func TaskMigrate(table *entity.ToDo) {
+// 	Connector.AutoMigrate(&table)
+// 	log.Println("[+] MySQL: Task Table migrated")
+// }
 
-func ParticipateMigrate(table *entity.Participant) {
-	Connector.AutoMigrate(&table)
-	log.Println("[+] MySQL: Participate Table migrated")
-}
-=======
->>>>>>> origin/feature
+// func ParticipateMigrate(table *entity.Participant) {
+// 	Connector.AutoMigrate(&table)
+// 	log.Println("[+] MySQL: Participate Table migrated")
+// }

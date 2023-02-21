@@ -1,15 +1,16 @@
 package main
 
 import (
-	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 	"time2do/controller"
 	"time2do/database"
+
+	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -36,20 +37,11 @@ func initDB() {
 	if connectErr != nil {
 		panic(connectErr.Error())
 	}
-<<<<<<< HEAD
 
-	database.UserMigrate(&entity.User{})
-<<<<<<< HEAD
-	database.GroupMigrate(&entity.Group{})
-	database.TaskMigrate(&entity.Task{})
-
-=======
-	database.GroupMigrate(&entity.Timer{})
-	database.TaskMigrate(&entity.ToDo{})
-	database.ParticipateMigrate(&entity.Participant{})
->>>>>>> origin/sa/formatting
-=======
->>>>>>> origin/feature
+	// database.UserMigrate(&entity.User{})
+	// database.GroupMigrate(&entity.Timer{})
+	// database.TaskMigrate(&entity.ToDo{})
+	// database.ParticipateMigrate(&entity.Participant{})
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
