@@ -144,6 +144,10 @@ func Participate(w http.ResponseWriter, r *http.Request) {
 	database.Connector.First(&user)
 	timer.Users = append(timer.Users, &user)
 	database.Connector.Updates(timer)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(timer)
 }
 
 type Participant struct {
