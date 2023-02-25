@@ -77,6 +77,35 @@ func GetCountdownParticipants(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(participants)
 }
 
+func Participate(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userId := vars["userId"]
+	timerId := vars["timerId"]
+
+	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
+	uIntTimerId, _ := strconv.ParseUint(timerId, 10, 32)
+
+	var timer entity.Timer
+
+	database.Connector.
+		Where(&entity.Timer{Id: uint(uIntTimerId)}).
+		Preload("Users").
+		Find(&timer)
+
+	for _, user := range timer.Users {
+		if uint(uIntUserId) == user.Id {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(409)
+			return
+		}
+	}
+
+	user := entity.User{Id: uint(uIntUserId)}
+	database.Connector.First(&user)
+	timer.Users = append(timer.Users, &user)
+	database.Connector.Updates(timer)
+}
+
 type Participant struct {
 	UserName string `json:"userName"`
 }
