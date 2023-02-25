@@ -78,7 +78,7 @@ type Report struct {
 	UserName             string               `json:"userName"`
 	TimeBlocksByDateTime map[string]TimeBlock `json:"timeBlocks"`
 	GroupTimers          []GroupTimer         `json:"groupTimers"`
-	TotalDuration        time.Duration        `json:"duration"`
+	TotalDuration        time.Duration        `json:"totalDurationInMills"`
 }
 
 type TimeBlock struct {
