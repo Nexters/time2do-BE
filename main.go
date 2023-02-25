@@ -50,6 +50,7 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/users", controller.GetAllUser).Methods("GET")
 	router.HandleFunc("/users", controller.CreateUser).Methods("POST")
 	router.HandleFunc("/users/{id}", controller.GetUserByID).Methods("GET")
+	router.HandleFunc("/users/{id}", controller.UpdateUser).Methods("PUT")
 	router.HandleFunc("/users/{id}/reports", controller.ViewReport).Methods("GET")
 
 	router.HandleFunc("/timers", controller.CreateTimer).Methods("POST")

@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"time2do/database"
 	"time2do/entity"
 
@@ -58,10 +59,43 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 // @Accept  json
 // @Produce  json
 // @Router /users [get]
-func GetAllUser(w http.ResponseWriter, r *http.Request) {
+func GetAllUser(w http.ResponseWriter, _ *http.Request) {
 	var users []entity.User
 	database.Connector.Find(&users)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(users)
+}
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userId := vars["id"]
+	uintUserId, _ := strconv.ParseUint(userId, 10, 32)
+	id := uint(uintUserId)
+
+	var command updateUserCommand
+	requestBody, _ := io.ReadAll(r.Body)
+	_ = json.Unmarshal(requestBody, &command)
+
+	user := entity.User{Id: id}
+	database.Connector.First(&user)
+
+	if command.UserName != nil {
+		user.UserName = *command.UserName
+		database.Connector.Model(user).Update("user_name", &command.UserName)
+	}
+
+	if command.OnBoarding != nil {
+		user.Onboarding = *command.OnBoarding
+		database.Connector.Model(user).Update("onboarding", &command.OnBoarding)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(user)
+}
+
+type updateUserCommand struct {
+	UserName   *string `json:"userName"`
+	OnBoarding *bool   `json:"onBoarding"`
 }
