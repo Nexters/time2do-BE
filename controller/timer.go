@@ -160,7 +160,12 @@ func GetSupporting(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	_ = json.NewEncoder(w).Encode(supportingMap[invitationCode])
+	supportings := supportingMap[invitationCode]
+	if supportings != nil {
+		_ = json.NewEncoder(w).Encode(supportings)
+	} else {
+		_ = json.NewEncoder(w).Encode([]supporting{})
+	}
 }
 
 func MakeSupporting(w http.ResponseWriter, r *http.Request) {
