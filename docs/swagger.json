@@ -14,7 +14,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8888",
+    "host": "time2do.me:8888",
     "basePath": "/",
     "paths": {
         "/group": {
