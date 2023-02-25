@@ -2,7 +2,7 @@ INSERT INTO T2D_DB.participants
 VALUES (1, 1);
 
 INSERT INTO T2D_DB.users
-VALUES (1, '사람', '123456789');
+VALUES (1, '4328a2ce', 'kimic', '1234', '0');
 
 INSERT INTO T2D_DB.timers
 VALUES (1, '개인 타이머', 1, 2, '태그1, 태그2, 태그3', null, '2023-02-01', '2023-02-02');

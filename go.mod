@@ -9,6 +9,7 @@ require (
 	github.com/joho/godotenv v1.5.0
 	github.com/swaggo/http-swagger v1.3.3
 	github.com/swaggo/swag v1.8.10
+	github.com/thanhpk/randstr v1.0.4
 	gorm.io/driver/mysql v1.4.7
 	gorm.io/gorm v1.24.5
 )
