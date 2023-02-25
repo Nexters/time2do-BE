@@ -22,9 +22,9 @@ type Timer struct {
 	Name           string    `gorm:"not null" json:"name"`
 	MakerId        uint      `gorm:"not null" json:"makerId"`
 	Type           TimerType `gorm:"not null" json:"type"`
-	Tags           string    `json:"tags"`
+	Tag            string    `json:"tag"`
 	InvitationCode *string   `json:"invitationCode"`
-	Users          []*User   `gorm:"many2many:participants;"`
+	Users          []*User   `gorm:"many2many:participants;" json:"users"`
 	StartTime      DateTime  `gorm:"not null" json:"startTime"`
 	EndTime        *DateTime `json:"endTime"`
 }

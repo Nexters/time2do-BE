@@ -127,7 +127,7 @@ func toTimeBlocks(timeRecords []entity.TimeRecord, totalGroupTimers []entity.Tim
 					DisplayTime:       *timer.EndTime,
 					Duration:          int(timer.EndTime.Sub(timer.StartTime).Hours()),
 					ParticipantsCount: len(timer.Users),
-					Tag:               timer.Tags,
+					Tag:               timer.Tag,
 				})
 			}
 		}

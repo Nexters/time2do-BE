@@ -26,7 +26,7 @@ func CreateTimer(w http.ResponseWriter, r *http.Request) {
 		Name:      command.Name,
 		MakerId:   command.MakerId,
 		Type:      command.Type,
-		Tags:      command.Tag,
+		Tag:       command.Tag,
 		StartTime: command.StartTime,
 		EndTime:   command.EndTime,
 	}

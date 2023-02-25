@@ -16,7 +16,7 @@ import (
 )
 
 // @Summary 유저 생성하기
-// @Tags User
+// @Tag User
 // @Accept  json
 // @Produce  json
 // @Router /user [post]
@@ -55,7 +55,7 @@ type CreateUserCommand struct {
 }
 
 // @Summary 유저 ID 로 조회하기
-// @Tags User
+// @Tag User
 // @Accept  json
 // @Produce  json
 // @Router /user/{id} [get]
@@ -69,7 +69,7 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary 아무 조건 없이 모든 User 불러오기
-// @Tags User
+// @Tag User
 // @Accept  json
 // @Produce  json
 // @Router /users [get]

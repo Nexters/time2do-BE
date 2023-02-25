@@ -11,7 +11,7 @@ import (
 )
 
 // @Summary 할일 생성하기
-// @Tags ToDo (Task)
+// @Tag ToDo (Task)
 // @Accept  json
 // @Produce  json
 // @Router /task [post]
@@ -26,7 +26,7 @@ func CreateToDo(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary 아무 조건 없이 모든 ToDo 불러오기
-// @Tags ToDo (Task)
+// @Tag ToDo (Task)
 // @Accept  json
 // @Produce  json
 // @Router /tasks [get]
@@ -39,7 +39,7 @@ func GetAllToDo(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary ToDo ID 를 통해 ToDo 불러오기
-// @Tags ToDo (Task)
+// @Tag ToDo (Task)
 func GetToDoById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
