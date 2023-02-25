@@ -69,7 +69,7 @@ func ViewReport(w http.ResponseWriter, r *http.Request) {
 		UserName:             user.UserName,
 		TimeBlocksByDateTime: toTimeBlocks(timeRecords, user.Timers, toDos, firstDayOfMonth, lastDayOfMonth),
 		GroupTimers:          groupTimers,
-		TotalDuration:        totalDuration,
+		TotalDuration:        totalDuration.String(),
 	}
 	_ = json.NewEncoder(w).Encode(report)
 }
@@ -78,7 +78,7 @@ type Report struct {
 	UserName             string               `json:"userName"`
 	TimeBlocksByDateTime map[string]TimeBlock `json:"timeBlocks"`
 	GroupTimers          []GroupTimer         `json:"groupTimers"`
-	TotalDuration        time.Duration        `json:"totalDurationInMills"`
+	TotalDuration        string               `json:"totalDuration"`
 }
 
 type TimeBlock struct {
