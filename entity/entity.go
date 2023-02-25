@@ -20,7 +20,7 @@ type ToDo struct {
 }
 
 type Timer struct {
-	Id             uint      `json:"id"`
+	Id             *uint     `json:"id"`
 	Name           string    `gorm:"not null" json:"name"`
 	MakerId        uint      `gorm:"not null" json:"makerId"`
 	Type           TimerType `gorm:"not null" json:"type"`

@@ -19,17 +19,35 @@ const otpChars = "1234567890"
 // @Router /group [post]
 func CreateTimer(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)
+	var command createTimerCommand
+	_ = json.Unmarshal(requestBody, &command)
 	var timer entity.Timer
-	_ = json.Unmarshal(requestBody, &timer)
-	if timer.Type == entity.Group {
+	timer = entity.Timer{
+		Name:      command.Name,
+		MakerId:   command.MakerId,
+		Type:      command.Type,
+		Tags:      command.Tag,
+		StartTime: command.StartTime,
+		EndTime:   command.EndTime,
+	}
+	if command.Type == entity.Group {
 		otp, _ := generateOTP(6)
 		timer.InvitationCode = &otp
 	}
 
-	database.Connector.Create(timer)
+	database.Connector.Create(&timer)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(timer)
+}
+
+type createTimerCommand struct {
+	Name      string           `json:"name"`
+	MakerId   uint             `json:"makerId"`
+	Type      entity.TimerType `json:"type"`
+	Tag       string           `json:"tag"`
+	StartTime DateTime         `json:"startTime"`
+	EndTime   *DateTime        `json:"endTime"`
 }
 
 // @Summary 그룹 조회하기
@@ -72,8 +90,9 @@ func GetCountdownParticipants(w http.ResponseWriter, r *http.Request) {
 
 	var timer entity.Timer
 
+	id := uint(uIntTimerId)
 	database.Connector.
-		Where(&entity.Timer{Id: uint(uIntTimerId)}).
+		Where(&entity.Timer{Id: &id}).
 		Preload("Users").
 		Find(&timer)
 
@@ -95,8 +114,9 @@ func Participate(w http.ResponseWriter, r *http.Request) {
 
 	var timer entity.Timer
 
+	id := uint(uIntTimerId)
 	database.Connector.
-		Where(&entity.Timer{Id: uint(uIntTimerId)}).
+		Where(&entity.Timer{Id: &id}).
 		Preload("Users").
 		Find(&timer)
 
