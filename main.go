@@ -46,18 +46,19 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 
 func initHandlers(router *mux.Router) {
 	router.HandleFunc("/", healthCheck).Methods("GET")
-	router.HandleFunc("/user", controller.CreateUser).Methods("POST")
-	router.HandleFunc("/user/{id}", controller.GetUserByID).Methods("GET")
+
 	router.HandleFunc("/users", controller.GetAllUser).Methods("GET")
+	router.HandleFunc("/users", controller.CreateUser).Methods("POST")
+	router.HandleFunc("/users/{id}", controller.GetUserByID).Methods("GET")
+	router.HandleFunc("/users/{id}/reports", controller.ViewReport).Methods("GET")
 
-	router.HandleFunc("/group", controller.CreateTimer).Methods("POST")
-	router.HandleFunc("/groups", controller.GetAllTimers).Methods("GET")
+	router.HandleFunc("/timers", controller.CreateTimer).Methods("POST")
+	router.HandleFunc("/timers", controller.GetAllTimers).Methods("GET")
+	router.HandleFunc("/users/{userId}/timers/{timerId}/timeRecords", controller.CreateTimerRecord).Methods("POST")
 
-	router.HandleFunc("/task", controller.CreateTask).Methods("POST")
+	router.HandleFunc("/tasks", controller.CreateTask).Methods("POST")
 	router.HandleFunc("/tasks", controller.GetAllTask).Methods("GET")
-	router.HandleFunc("/task/{id}", controller.GetTaskByID).Methods("GET")
-
-	router.HandleFunc("/report/{id}", controller.ViewReport).Methods("GET")
+	router.HandleFunc("/tasks/{id}", controller.GetTaskByID).Methods("GET")
 
 	// Swagger
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
