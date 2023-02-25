@@ -29,9 +29,9 @@ func CreateToDo(w http.ResponseWriter, r *http.Request) {
 	toDo := entity.ToDo{
 		UserId:        id,
 		Content:       command.Content,
-		Completed:     false,
+		Completed:     command.Completed,
 		CreatedTime:   command.CreatedTime,
-		CompletedTime: nil,
+		CompletedTime: command.CompletedTime,
 	}
 	database.Connector.Create(&toDo)
 	w.Header().Set("Content-Type", "application/json")
@@ -40,8 +40,10 @@ func CreateToDo(w http.ResponseWriter, r *http.Request) {
 }
 
 type CreateToDoCommand struct {
-	Content     string   `json:"content"`
-	CreatedTime DateTime `json:"createdTime"`
+	Content       string    `json:"content"`
+	Completed     bool      `json:"completed"`
+	CreatedTime   DateTime  `json:"createdTime"`
+	CompletedTime *DateTime `json:"completedTime"`
 }
 
 // @Summary 아무 조건 없이 모든 ToDo 불러오기
