@@ -57,6 +57,30 @@ func CreateTimerRecord(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(timeRecord)
 }
 
+func GetCountdownParticipants(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	timerId := vars["timerId"]
+	uIntTimerId, _ := strconv.ParseUint(timerId, 10, 32)
+
+	var timer entity.Timer
+
+	database.Connector.
+		Where(&entity.Timer{Id: uint(uIntTimerId)}).
+		Preload("Users").
+		Find(&timer)
+
+	var participants []Participant
+	for _, participant := range timer.Users {
+		participants = append(participants, Participant{UserName: participant.UserName})
+	}
+
+	_ = json.NewEncoder(w).Encode(participants)
+}
+
+type Participant struct {
+	UserName string `json:"userName"`
+}
+
 type CreateTimeRecordCommand struct {
 	StartTime entity.DateTime `json:"startDateTime"`
 	EndTime   entity.DateTime `json:"endDateTime"`
