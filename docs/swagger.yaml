@@ -1,5 +1,5 @@
 basePath: /
-host: localhost:8888
+host: time2do.me:8888
 info:
   contact:
     email: soberkoder@swagger.io
