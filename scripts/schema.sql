@@ -76,7 +76,7 @@ CREATE TABLE `timers` (
                           `name` varchar(255) NOT NULL,
                           `maker_id` int unsigned NOT NULL,
                           `type` int NOT NULL,
-                          `tags` varchar(255) DEFAULT NULL,
+                          `tag` varchar(255) DEFAULT NULL,
                           `invitation_code` varchar(12) DEFAULT NULL UNIQUE,
                           `start_time` datetime NOT NULL,
                           `end_time` datetime DEFAULT NULL,
