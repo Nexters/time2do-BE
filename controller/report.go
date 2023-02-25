@@ -37,8 +37,9 @@ func ViewReport(w http.ResponseWriter, r *http.Request) {
 		Find(&toDos)
 
 	var user entity.User
+	id := uint(uIntUserId)
 	_ = database.Connector.
-		Where(&entity.User{Id: uint(uIntUserId)}).
+		Where(&entity.User{Id: &id}).
 		Preload("Timers").
 		Preload("Timers.Users", func(db *gorm.DB) *gorm.DB {
 			return db.Select("users.id")

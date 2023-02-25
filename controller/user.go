@@ -2,8 +2,8 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"time2do/database"
@@ -13,8 +13,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/thanhpk/randstr"
-
-	"time"
 )
 
 // @Summary 유저 생성하기
@@ -24,38 +22,36 @@ import (
 // @Router /user [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)
-	var reqUser entity.User
-	_ = json.Unmarshal(requestBody, &reqUser)
+	var command CreateUserCommand
+	_ = json.Unmarshal(requestBody, &command)
 
-	// logging for debug
-	log.Println("\n" + string(requestBody))
-	log.Println("User identify string: " + reqUser.IdToken)
-	log.Println("Username: " + reqUser.UserName)
-	log.Println("Password: " + reqUser.Password)
+	var user *entity.User
+	database.Connector.
+		Select("id").
+		Where(&entity.User{UserName: command.UserName}).
+		Find(&user)
 
-	w.Header().Set("Content-Type", "application/json")
-
-	idToken := randstr.Hex(4)
-	log.Println(idToken)
-
-	var dbUser entity.User
-	database.Connector.Where(&entity.User{IdToken: idToken}).Find(&dbUser)
-	log.Println(dbUser.IdToken)
-
-	reqUser.IdToken = idToken
-	now := time.Now()
-	reqUser.Id = uint(now.Nanosecond())
-	log.Println("[2] User identify id: " + string(reqUser.Id))
-	log.Println("[2] User identify string: " + reqUser.IdToken)
-	log.Println("[2] Username: " + reqUser.UserName)
-	log.Println("[2] Password: " + reqUser.Password)
-	if results := database.Connector.Create(reqUser); results.Error != nil {
+	if user.Id != nil {
 		w.WriteHeader(http.StatusConflict)
-		// 	_ = json.NewEncoder(w).Encode("이미 존재하는  입니다")
+		_ = json.NewEncoder(w).Encode(fmt.Sprintf("이미 존재하는 유저 이름입니다. userName : %s", command.UserName))
 		return
 	}
+
+	user = &entity.User{
+		IdToken:    randstr.Hex(4),
+		UserName:   command.UserName,
+		Password:   command.Password,
+		Onboarding: false,
+	}
+	database.Connector.Create(user)
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(reqUser)
+	_ = json.NewEncoder(w).Encode(*user)
+}
+
+type CreateUserCommand struct {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
 }
 
 // @Summary 유저 ID 로 조회하기
@@ -95,7 +91,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)
 	_ = json.Unmarshal(requestBody, &command)
 
-	user := entity.User{Id: id}
+	user := entity.User{Id: &id}
 	database.Connector.First(&user)
 
 	if command.UserName != nil {

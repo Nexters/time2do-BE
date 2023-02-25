@@ -120,15 +120,16 @@ func Participate(w http.ResponseWriter, r *http.Request) {
 		Preload("Users").
 		Find(&timer)
 
+	id = uint(uIntUserId)
 	for _, user := range timer.Users {
-		if uint(uIntUserId) == user.Id {
+		if id == *user.Id {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(409)
 			return
 		}
 	}
 
-	user := entity.User{Id: uint(uIntUserId)}
+	user := entity.User{Id: &id}
 	database.Connector.First(&user)
 	timer.Users = append(timer.Users, &user)
 	database.Connector.Updates(timer)
