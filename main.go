@@ -60,7 +60,7 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/timers/{invitationCode}/users/{userId}", controller.Participate).Methods("POST")
 	router.HandleFunc("/users/{userId}/timers/{timerId}/timeRecords", controller.CreateTimerRecord).Methods("POST")
 
-	router.HandleFunc("/tasks", controller.CreateToDo).Methods("POST")
+	router.HandleFunc("/users/{userId}/tasks", controller.CreateToDo).Methods("POST")
 	router.HandleFunc("/tasks", controller.GetAllToDo).Methods("GET")
 	router.HandleFunc("/tasks/{id}", controller.GetToDoById).Methods("GET")
 

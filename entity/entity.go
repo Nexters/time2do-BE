@@ -9,12 +9,12 @@ const (
 )
 
 type ToDo struct {
-	Id            uint     `json:"id"`
-	UserId        uint     `gorm:"not null" json:"userId"`
-	Content       string   `gorm:"not null" json:"content"`
-	Completed     bool     `json:"completed"`
-	CreatedTime   DateTime `json:"createdTime"`
-	CompletedTime DateTime `json:"completedTime"`
+	Id            uint      `json:"id"`
+	UserId        uint      `gorm:"not null" json:"userId"`
+	Content       string    `gorm:"not null" json:"content"`
+	Completed     bool      `json:"completed"`
+	CreatedTime   DateTime  `json:"createdTime"`
+	CompletedTime *DateTime `json:"completedTime"`
 }
 
 type Timer struct {

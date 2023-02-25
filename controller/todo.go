@@ -2,8 +2,9 @@ package controller
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
+	"strconv"
 	"time2do/database"
 	"time2do/entity"
 
@@ -16,13 +17,31 @@ import (
 // @Produce  json
 // @Router /task [post]
 func CreateToDo(w http.ResponseWriter, r *http.Request) {
-	requestBody, _ := ioutil.ReadAll(r.Body)
-	var task entity.ToDo
-	json.Unmarshal(requestBody, &task)
-	database.Connector.Create(task)
+	requestBody, _ := io.ReadAll(r.Body)
+	var command CreateToDoCommand
+	_ = json.Unmarshal(requestBody, &command)
+
+	vars := mux.Vars(r)
+	userId := vars["userId"]
+	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
+	id := uint(uIntUserId)
+
+	toDo := entity.ToDo{
+		UserId:        id,
+		Content:       command.Content,
+		Completed:     false,
+		CreatedTime:   command.CreatedTime,
+		CompletedTime: nil,
+	}
+	database.Connector.Create(&toDo)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(task)
+	_ = json.NewEncoder(w).Encode(toDo)
+}
+
+type CreateToDoCommand struct {
+	Content     string   `json:"content"`
+	CreatedTime DateTime `json:"createdTime"`
 }
 
 // @Summary 아무 조건 없이 모든 ToDo 불러오기
