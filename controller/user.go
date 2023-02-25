@@ -12,6 +12,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/thanhpk/randstr"
+
+	"time"
 )
 
 // @Summary 유저 생성하기
@@ -35,17 +37,24 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	idToken := randstr.Hex(4)
 	log.Println(idToken)
 
-	// var dbUser entity.User
-	// database.Connector.Preload("User").Where(&entity.User{UserIdentity: token}).Find(&dbUser)
-	// log.Println(dbUser.UserIdentity)
+	var dbUser entity.User
+	database.Connector.Where(&entity.User{IdToken: idToken}).Find(&dbUser)
+	log.Println(dbUser.IdToken)
 
-	// if results := database.Connector.Create(user); results.Error != nil {
-	// 	w.WriteHeader(http.StatusConflict)
-	// 	_ = json.NewEncoder(w).Encode("이미 존재하는  입니다")
-	// 	return
-	// }
-	// w.WriteHeader(http.StatusOK)
-	// _ = json.NewEncoder(w).Encode(user)
+	reqUser.IdToken = idToken
+	now := time.Now()
+	reqUser.Id = uint(now.Nanosecond())
+	log.Println("[2] User identify id: " + string(reqUser.Id))
+	log.Println("[2] User identify string: " + reqUser.IdToken)
+	log.Println("[2] Username: " + reqUser.UserName)
+	log.Println("[2] Password: " + reqUser.Password)
+	if results := database.Connector.Create(reqUser); results.Error != nil {
+		w.WriteHeader(http.StatusConflict)
+		// 	_ = json.NewEncoder(w).Encode("이미 존재하는  입니다")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(reqUser)
 }
 
 // @Summary 유저 ID 로 조회하기
