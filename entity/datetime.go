@@ -22,7 +22,7 @@ func (t DateTime) LastDayOfMonth() DateTime {
 }
 
 func (t DateTime) Between(before DateTime, after DateTime) bool {
-	return (t.After(before) || t.Equal(before)) && (t.Before(after) || t.Equal(after))
+	return (t.After(before) || t.Equal(before)) && (t.Before(after))
 }
 
 func (t DateTime) After(u DateTime) bool {

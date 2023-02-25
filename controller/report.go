@@ -66,24 +66,26 @@ func ViewReport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	report := Report{
-		ToDos:         toDos,
-		TimeBlocks:    toTimeBlocks(timeRecords, user.Timers, firstDayOfMonth, lastDayOfMonth),
-		GroupTimers:   groupTimers,
-		TotalDuration: totalDuration,
+		UserName:             user.UserName,
+		TimeBlocksByDateTime: toTimeBlocks(timeRecords, user.Timers, toDos, firstDayOfMonth, lastDayOfMonth),
+		GroupTimers:          groupTimers,
+		TotalDuration:        totalDuration,
 	}
 	_ = json.NewEncoder(w).Encode(report)
 }
 
 type Report struct {
-	ToDos         []entity.ToDo `json:"toDos"`
-	TimeBlocks    []TimeBlock   `json:"timeBlocks"`
-	GroupTimers   []GroupTimer  `json:"groupTimers"`
-	TotalDuration time.Duration `json:"duration"`
+	UserName             string               `json:"userName"`
+	TimeBlocksByDateTime map[string]TimeBlock `json:"timeBlocks"`
+	GroupTimers          []GroupTimer         `json:"groupTimers"`
+	TotalDuration        time.Duration        `json:"duration"`
 }
 
 type TimeBlock struct {
-	Hour         int  `json:"hour"`
-	InGroupTimer bool `json:"inGroupTimer"`
+	Hour         int           `json:"hour"`
+	Minute       int           `json:"minute"`
+	ToDos        []entity.ToDo `json:"toDos"`
+	InGroupTimer bool          `json:"inGroupTimer"`
 }
 
 type GroupTimer struct {
@@ -94,31 +96,48 @@ type GroupTimer struct {
 	Tag               string   `json:"tag"`
 }
 
-func toTimeBlocks(timeRecords []entity.TimeRecord, groupTimers []entity.Timer, startDateTime DateTime, endDate DateTime) []TimeBlock {
+func toTimeBlocks(timeRecords []entity.TimeRecord, groupTimers []entity.Timer, toDos []entity.ToDo, startDateTime DateTime, endDate DateTime) map[string]TimeBlock {
 	var nowDate = startDateTime
-	var timeBlocks []TimeBlock
+	var timeBlocksByDateTime = map[string]TimeBlock{}
 
 	for nowDate.Before(endDate) {
-		var hour = 0
-		var inGroupTimer = false
+		hour := 0
+		minute := 0
+		inGroupTimer := false
 		nextDate := nowDate.AddDate(0, 0, 1)
 		for _, timeRecord := range timeRecords {
 			actualEndDate := nextDate.Min(timeRecord.EndTime)
 
 			if timeRecord.StartTime.Between(nowDate, nextDate) {
-				hour = int(actualEndDate.Sub(timeRecord.StartTime).Hours())
+				duration := actualEndDate.Sub(timeRecord.StartTime)
+				totalMinutes := int(duration.Minutes())
+				hour = totalMinutes / 60
+				minute = totalMinutes % 60
 			} else if timeRecord.EndTime.Between(nowDate, nextDate) {
-				hour = int(actualEndDate.Sub(nowDate).Hours())
+				duration := actualEndDate.Sub(nowDate)
+				totalMinutes := int(duration.Minutes())
+				hour = totalMinutes / 60
+				minute = totalMinutes % 60
 			}
 		}
 
 		for _, groupTimer := range groupTimers {
 			inGroupTimer = groupTimer.EndTime != nil && groupTimer.EndTime.Between(nowDate, nextDate)
 		}
+
+		//goland:noinspection GoPreferNilSlice
+		var nowToDos = []entity.ToDo{}
+
+		for _, toDo := range toDos {
+			if toDo.CompletedTime.Between(nowDate, nextDate) {
+				nowToDos = append(nowToDos, toDo)
+			}
+		}
+
+		timeBlocksByDateTime[nowDate.Format("2006-01-02")] = TimeBlock{Hour: hour, Minute: minute, InGroupTimer: inGroupTimer, ToDos: nowToDos}
 		nowDate = nowDate.AddDate(0, 0, 1)
-		timeBlocks = append(timeBlocks, TimeBlock{Hour: hour, InGroupTimer: inGroupTimer})
 	}
-	return timeBlocks
+	return timeBlocksByDateTime
 }
 
 // TODO: 응원하기
