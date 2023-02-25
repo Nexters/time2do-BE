@@ -1,15 +1,16 @@
 package main
 
 import (
-	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 	"time2do/controller"
 	"time2do/database"
+
+	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -36,6 +37,11 @@ func initDB() {
 	if connectErr != nil {
 		panic(connectErr.Error())
 	}
+
+	// database.UserMigrate(&entity.User{})
+	// database.GroupMigrate(&entity.Timer{})
+	// database.TaskMigrate(&entity.ToDo{})
+	// database.ParticipateMigrate(&entity.Participant{})
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
@@ -59,9 +65,9 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/timers/{timerId}/users/{userId}", controller.Participate).Methods("POST")
 	router.HandleFunc("/users/{userId}/timers/{timerId}/timeRecords", controller.CreateTimerRecord).Methods("POST")
 
-	router.HandleFunc("/tasks", controller.CreateTask).Methods("POST")
-	router.HandleFunc("/tasks", controller.GetAllTask).Methods("GET")
-	router.HandleFunc("/tasks/{id}", controller.GetTaskByID).Methods("GET")
+	router.HandleFunc("/tasks", controller.CreateToDo).Methods("POST")
+	router.HandleFunc("/tasks", controller.GetAllToDo).Methods("GET")
+	router.HandleFunc("/tasks/{id}", controller.GetToDoById).Methods("GET")
 
 	// Swagger
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)

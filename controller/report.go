@@ -134,10 +134,19 @@ func toTimeBlocks(timeRecords []entity.TimeRecord, totalGroupTimers []entity.Tim
 			}
 		}
 
+
 		timeBlocksByDateTime[nowDate.Format("2006-01-02")] = TimeBlock{Hour: hour, Minute: minute, InGroupTimer: inGroupTimer, ToDos: todayToDos, GroupTimers: todayGroupTimers}
+		//goland:noinspection GoPreferNilSlice
+		var nowToDos = []entity.ToDo{}
+
+		for _, toDo := range toDos {
+			if toDo.CompletedTime.Between(nowDate, nextDate) {
+				nowToDos = append(nowToDos, toDo)
+			}
+		}
+
 		nowDate = nowDate.AddDate(0, 0, 1)
 	}
 	return timeBlocksByDateTime
 }
-
 // TODO: 응원하기

@@ -2,7 +2,7 @@ package controller
 
 import (
 	"encoding/json"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"time2do/database"
 	"time2do/entity"
@@ -15,10 +15,10 @@ import (
 // @Accept  json
 // @Produce  json
 // @Router /task [post]
-func CreateTask(w http.ResponseWriter, r *http.Request) {
-	requestBody, _ := io.ReadAll(r.Body)
+func CreateToDo(w http.ResponseWriter, r *http.Request) {
+	requestBody, _ := ioutil.ReadAll(r.Body)
 	var task entity.ToDo
-	_ = json.Unmarshal(requestBody, &task)
+	json.Unmarshal(requestBody, &task)
 	database.Connector.Create(task)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -30,7 +30,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 // @Accept  json
 // @Produce  json
 // @Router /tasks [get]
-func GetAllTask(w http.ResponseWriter, r *http.Request) {
+func GetAllToDo(w http.ResponseWriter, r *http.Request) {
 	var tasks []entity.ToDo
 	database.Connector.Find(&tasks)
 	w.Header().Set("Content-Type", "application/json")
@@ -40,7 +40,7 @@ func GetAllTask(w http.ResponseWriter, r *http.Request) {
 
 // @Summary ToDo ID 를 통해 ToDo 불러오기
 // @Tags ToDo (Task)
-func GetTaskByID(w http.ResponseWriter, r *http.Request) {
+func GetToDoById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
 	var task entity.ToDo
