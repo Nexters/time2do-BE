@@ -108,7 +108,8 @@ func GetCountdownParticipants(w http.ResponseWriter, r *http.Request) {
 		Preload("Users").
 		Find(&timer)
 
-	var participants []Participant
+	//goland:noinspection GoPreferNilSlice
+	var participants = []Participant{}
 	for _, participant := range timer.Users {
 		var toDos []entity.ToDo
 		// TODO: private
@@ -152,6 +153,33 @@ func Participate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(timer)
+}
+
+func Leave(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userId := vars["userId"]
+	invitationCode := vars["invitationCode"]
+	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
+	id := uint(uIntUserId)
+
+	var timer entity.Timer
+	database.Connector.
+		Where(&entity.Timer{InvitationCode: &invitationCode}).
+		Preload("Users").
+		Find(&timer)
+
+	users := timer.Users
+	for _, user := range users {
+		if id == *user.Id {
+			_ = database.Connector.Model(&timer).Association("Users").Delete(user)
+
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_ = json.NewEncoder(w).Encode(timer)
+			return
+		}
+	}
+	// TODO: 예외처리
 }
 
 func GetSupporting(w http.ResponseWriter, r *http.Request) {
