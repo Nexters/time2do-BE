@@ -40,8 +40,8 @@ type TimeRecord struct {
 }
 
 type User struct {
-	Id         uint    `json:"id"`
-	IdToken    string  `json:idToken`
+	Id         *uint   `json:"id"`
+	IdToken    string  `json:"idToken"`
 	UserName   string  `json:"username"`
 	Password   string  `json:"password"`
 	Onboarding bool    `json:"onboarding"`
