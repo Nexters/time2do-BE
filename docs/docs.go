@@ -31,10 +31,7 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "Group (다운 타이머)"
-                ],
-                "summary": "그룹 생성하기",
+                "summary": "타이머 생성하기",
                 "responses": {}
             }
         },
@@ -45,9 +42,6 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
-                ],
-                "tags": [
-                    "Group (다운 타이머)"
                 ],
                 "summary": "그룹 조회하기",
                 "responses": {}
@@ -79,7 +73,7 @@ const docTemplate = `{
                 "tags": [
                     "ToDo (Task)"
                 ],
-                "summary": "아무 조건 없이 모든 Task 불러오기",
+                "summary": "아무 조건 없이 모든 ToDo 불러오기",
                 "responses": {}
             }
         },
@@ -134,7 +128,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "0.0.0.0:8888",
+	Host:             "localhost:8888",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Orders API",

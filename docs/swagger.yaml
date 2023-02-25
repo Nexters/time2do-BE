@@ -1,5 +1,5 @@
 basePath: /
-host: time2do.me:8888
+host: localhost:8888
 info:
   contact:
     email: soberkoder@swagger.io
@@ -19,9 +19,7 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: 그룹 생성하기
-      tags:
-      - Group (다운 타이머)
+      summary: 타이머 생성하기
   /groups:
     get:
       consumes:
@@ -30,8 +28,6 @@ paths:
       - application/json
       responses: {}
       summary: 그룹 조회하기
-      tags:
-      - Group (다운 타이머)
   /task:
     post:
       consumes:
@@ -49,7 +45,7 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: 아무 조건 없이 모든 Task 불러오기
+      summary: 아무 조건 없이 모든 ToDo 불러오기
       tags:
       - ToDo (Task)
   /user:
