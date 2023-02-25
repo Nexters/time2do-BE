@@ -132,18 +132,19 @@ func Participate(w http.ResponseWriter, r *http.Request) {
 		Find(&timer)
 
 	id := uint(uIntUserId)
+	contains := false
 	for _, user := range timer.Users {
 		if id == *user.Id {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(409)
-			return
+			contains = true
+			break
 		}
 	}
-
-	user := entity.User{Id: &id}
-	database.Connector.First(&user)
-	timer.Users = append(timer.Users, &user)
-	database.Connector.Updates(timer)
+	if !contains {
+		user := entity.User{Id: &id}
+		database.Connector.First(&user)
+		timer.Users = append(timer.Users, &user)
+		database.Connector.Updates(timer)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
