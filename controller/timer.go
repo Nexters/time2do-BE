@@ -98,7 +98,11 @@ func GetCountdownParticipants(w http.ResponseWriter, r *http.Request) {
 
 	var participants []Participant
 	for _, participant := range timer.Users {
-		participants = append(participants, Participant{UserName: participant.UserName})
+		var toDos []entity.ToDo
+		// TODO: private
+		database.Connector.Where(&entity.ToDo{UserId: *participant.Id}).
+			Find(&toDos)
+		participants = append(participants, Participant{UserName: participant.UserName, ToDos: toDos})
 	}
 
 	_ = json.NewEncoder(w).Encode(participants)
@@ -136,7 +140,8 @@ func Participate(w http.ResponseWriter, r *http.Request) {
 }
 
 type Participant struct {
-	UserName string `json:"userName"`
+	UserName string        `json:"userName"`
+	ToDos    []entity.ToDo `json:"toDos"`
 }
 
 type CreateTimeRecordCommand struct {
