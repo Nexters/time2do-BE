@@ -105,11 +105,8 @@ CREATE TABLE `to_dos` (
                           `user_id` int unsigned NOT NULL,
                           `content` varchar(255) NOT NULL,
                           `completed` tinyint(1) DEFAULT NULL,
-                          `private` tinyint(1) DEFAULT NULL,
                           `created_time` datetime DEFAULT NULL,
                           `completed_time` datetime DEFAULT NULL,
-                          `modified_time` datetime DEFAULT NULL,
-                          `deleted_time` datetime DEFAULT NULL,
                           PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

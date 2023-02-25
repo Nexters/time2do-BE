@@ -15,8 +15,6 @@ type ToDo struct {
 	Completed     bool     `json:"completed"`
 	CreatedTime   DateTime `json:"createdTime"`
 	CompletedTime DateTime `json:"completedTime"`
-	ModifiedTime  DateTime `json:"modifiedTime"`
-	DeletedTime   DateTime `json:"deletedTime"`
 }
 
 type Timer struct {
