@@ -156,13 +156,7 @@ func Participate(w http.ResponseWriter, r *http.Request) {
 
 func GetSupporting(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	userId := vars["userId"]
 	invitationCode := vars["invitationCode"]
-	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
-	id := uint(uIntUserId)
-	user := entity.User{Id: &id}
-	database.Connector.First(&user)
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
