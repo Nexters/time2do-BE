@@ -43,5 +43,5 @@ type User struct {
 	UserName   string  `json:"username"`
 	Password   string  `json:"password"`
 	Onboarding bool    `json:"onboarding"`
-	Timers     []Timer `gorm:"many2many:participants;"`
+	Timers     []Timer `gorm:"many2many:participants;" json:"timers"`
 }

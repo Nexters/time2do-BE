@@ -83,6 +83,18 @@ func CreateTimerRecord(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(timeRecord)
 }
 
+func GetGroupTimer(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	invitationCode := vars["invitationCode"]
+
+	var timer entity.Timer
+	database.Connector.Where(entity.Timer{InvitationCode: &invitationCode}).First(&timer)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(timer)
+}
+
 func GetCountdownParticipants(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	timerId := vars["timerId"]
