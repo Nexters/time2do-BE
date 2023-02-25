@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"io"
@@ -10,6 +11,8 @@ import (
 	"time2do/entity"
 )
 
+const otpChars = "1234567890"
+
 // @Summary 타이머 생성하기
 // @Accept  json
 // @Produce  json
@@ -18,6 +21,11 @@ func CreateTimer(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)
 	var timer entity.Timer
 	_ = json.Unmarshal(requestBody, &timer)
+	if timer.Type == entity.Group {
+		otp, _ := generateOTP(6)
+		timer.InvitationCode = &otp
+	}
+
 	database.Connector.Create(timer)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -113,4 +121,19 @@ type Participant struct {
 type CreateTimeRecordCommand struct {
 	StartTime entity.DateTime `json:"startDateTime"`
 	EndTime   entity.DateTime `json:"endDateTime"`
+}
+
+func generateOTP(length int) (string, error) {
+	buffer := make([]byte, length)
+	_, err := rand.Read(buffer)
+	if err != nil {
+		return "", err
+	}
+
+	otpCharsLength := len(otpChars)
+	for i := 0; i < length; i++ {
+		buffer[i] = otpChars[int(buffer[i])%otpCharsLength]
+	}
+
+	return string(buffer), nil
 }

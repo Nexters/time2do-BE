@@ -20,15 +20,15 @@ type ToDo struct {
 }
 
 type Timer struct {
-	Id        uint      `json:"id"`
-	Name      string    `gorm:"not null" json:"name"`
-	MakerId   uint      `gorm:"not null" json:"makerId"`
-	Type      TimerType `gorm:"not null" json:"type"`
-	Tags      string    `json:"tags"`
-	LinkUrl   *string   `json:"linkUrl"`
-	Users     []*User   `gorm:"many2many:participants;"`
-	StartTime DateTime  `gorm:"not null" json:"startTime"`
-	EndTime   *DateTime `json:"endTime"`
+	Id             uint      `json:"id"`
+	Name           string    `gorm:"not null" json:"name"`
+	MakerId        uint      `gorm:"not null" json:"makerId"`
+	Type           TimerType `gorm:"not null" json:"type"`
+	Tags           string    `json:"tags"`
+	InvitationCode *string   `json:"invitationCode"`
+	Users          []*User   `gorm:"many2many:participants;"`
+	StartTime      DateTime  `gorm:"not null" json:"startTime"`
+	EndTime        *DateTime `json:"endTime"`
 }
 
 type TimeRecord struct {
