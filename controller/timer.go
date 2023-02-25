@@ -97,14 +97,11 @@ func GetGroupTimer(w http.ResponseWriter, r *http.Request) {
 
 func GetCountdownParticipants(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	timerId := vars["timerId"]
-	uIntTimerId, _ := strconv.ParseUint(timerId, 10, 32)
+	invitationCode := vars["invitationCode"]
 
 	var timer entity.Timer
-
-	id := uint(uIntTimerId)
 	database.Connector.
-		Where(&entity.Timer{Id: &id}).
+		Where(&entity.Timer{InvitationCode: &invitationCode}).
 		Preload("Users").
 		Find(&timer)
 
@@ -123,20 +120,18 @@ func GetCountdownParticipants(w http.ResponseWriter, r *http.Request) {
 func Participate(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userId := vars["userId"]
-	timerId := vars["timerId"]
+	invitationCode := vars["invitationCode"]
 
 	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
-	uIntTimerId, _ := strconv.ParseUint(timerId, 10, 32)
 
 	var timer entity.Timer
 
-	id := uint(uIntTimerId)
 	database.Connector.
-		Where(&entity.Timer{Id: &id}).
+		Where(&entity.Timer{InvitationCode: &invitationCode}).
 		Preload("Users").
 		Find(&timer)
 
-	id = uint(uIntUserId)
+	id := uint(uIntUserId)
 	for _, user := range timer.Users {
 		if id == *user.Id {
 			w.Header().Set("Content-Type", "application/json")

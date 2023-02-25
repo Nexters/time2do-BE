@@ -56,8 +56,8 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/timers", controller.CreateTimer).Methods("POST")
 	router.HandleFunc("/timers", controller.GetAllTimers).Methods("GET")
 	router.HandleFunc("/timers/{invitationCode}", controller.GetGroupTimer).Methods("GET")
-	router.HandleFunc("/timers/{timerId}/users", controller.GetCountdownParticipants).Methods("GET")
-	router.HandleFunc("/timers/{timerId}/users/{userId}", controller.Participate).Methods("POST")
+	router.HandleFunc("/timers/{invitationCode}/users", controller.GetCountdownParticipants).Methods("GET")
+	router.HandleFunc("/timers/{invitationCode}/users/{userId}", controller.Participate).Methods("POST")
 	router.HandleFunc("/users/{userId}/timers/{timerId}/timeRecords", controller.CreateTimerRecord).Methods("POST")
 
 	router.HandleFunc("/tasks", controller.CreateToDo).Methods("POST")
