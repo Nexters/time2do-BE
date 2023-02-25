@@ -1,16 +1,15 @@
 package main
 
 import (
+	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"os"
 	"time2do/controller"
 	"time2do/database"
-
-	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -37,11 +36,6 @@ func initDB() {
 	if connectErr != nil {
 		panic(connectErr.Error())
 	}
-
-	// database.UserMigrate(&entity.User{})
-	// database.GroupMigrate(&entity.Timer{})
-	// database.TaskMigrate(&entity.ToDo{})
-	// database.ParticipateMigrate(&entity.Participant{})
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
@@ -89,5 +83,5 @@ func main() {
 	log.Println("[*] Starting the HTTP server on port 8888")
 	router := mux.NewRouter().StrictSlash(true)
 	initHandlers(router)
-	log.Fatal(http.ListenAndServe(":8888", handlers.CORS()(router)))
+	log.Fatal(http.ListenAndServe(":8888", cors.AllowAll().Handler(router)))
 }
