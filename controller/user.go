@@ -19,6 +19,7 @@ import (
 // @Tags User
 // @Accept  json
 // @Produce  json
+// @Param			id	test		int	true	"test string"
 // @Router /user [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)

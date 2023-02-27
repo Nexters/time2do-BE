@@ -89,6 +89,15 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "유저 생성하기",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             }
         },
