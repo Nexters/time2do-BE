@@ -7,11 +7,14 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 	"time2do/database"
 	"time2do/entity"
 )
 
 const otpChars = "1234567890"
+
+var supportingMap = map[string][]supporting{}
 
 // @Summary 타이머 생성하기
 // @Accept  json
@@ -26,7 +29,7 @@ func CreateTimer(w http.ResponseWriter, r *http.Request) {
 		Name:      command.Name,
 		MakerId:   command.MakerId,
 		Type:      command.Type,
-		Tags:      command.Tag,
+		Tag:       command.Tag,
 		StartTime: command.StartTime,
 		EndTime:   command.EndTime,
 	}
@@ -83,22 +86,36 @@ func CreateTimerRecord(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(timeRecord)
 }
 
-func GetCountdownParticipants(w http.ResponseWriter, r *http.Request) {
+func GetGroupTimer(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	timerId := vars["timerId"]
-	uIntTimerId, _ := strconv.ParseUint(timerId, 10, 32)
+	invitationCode := vars["invitationCode"]
 
 	var timer entity.Timer
+	database.Connector.Where(entity.Timer{InvitationCode: &invitationCode}).First(&timer)
 
-	id := uint(uIntTimerId)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(timer)
+}
+
+func GetCountdownParticipants(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	invitationCode := vars["invitationCode"]
+
+	var timer entity.Timer
 	database.Connector.
-		Where(&entity.Timer{Id: &id}).
+		Where(&entity.Timer{InvitationCode: &invitationCode}).
 		Preload("Users").
 		Find(&timer)
 
-	var participants []Participant
+	//goland:noinspection GoPreferNilSlice
+	var participants = []Participant{}
 	for _, participant := range timer.Users {
-		participants = append(participants, Participant{UserName: participant.UserName})
+		var toDos []entity.ToDo
+		// TODO: private
+		database.Connector.Where(&entity.ToDo{UserId: *participant.Id}).
+			Find(&toDos)
+		participants = append(participants, Participant{UserName: participant.UserName, ToDos: toDos})
 	}
 
 	_ = json.NewEncoder(w).Encode(participants)
@@ -107,36 +124,103 @@ func GetCountdownParticipants(w http.ResponseWriter, r *http.Request) {
 func Participate(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userId := vars["userId"]
-	timerId := vars["timerId"]
+	invitationCode := vars["invitationCode"]
 
 	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
-	uIntTimerId, _ := strconv.ParseUint(timerId, 10, 32)
 
 	var timer entity.Timer
 
-	id := uint(uIntTimerId)
 	database.Connector.
-		Where(&entity.Timer{Id: &id}).
+		Where(&entity.Timer{InvitationCode: &invitationCode}).
 		Preload("Users").
 		Find(&timer)
 
-	id = uint(uIntUserId)
+	id := uint(uIntUserId)
+	contains := false
 	for _, user := range timer.Users {
 		if id == *user.Id {
+			contains = true
+			break
+		}
+	}
+	if !contains {
+		user := entity.User{Id: &id}
+		database.Connector.First(&user)
+		timer.Users = append(timer.Users, &user)
+		database.Connector.Updates(timer)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(timer)
+}
+
+func Leave(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userId := vars["userId"]
+	invitationCode := vars["invitationCode"]
+	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
+	id := uint(uIntUserId)
+
+	var timer entity.Timer
+	database.Connector.
+		Where(&entity.Timer{InvitationCode: &invitationCode}).
+		Preload("Users").
+		Find(&timer)
+
+	users := timer.Users
+	for _, user := range users {
+		if id == *user.Id {
+			_ = database.Connector.Model(&timer).Association("Users").Delete(user)
+
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(409)
+			w.WriteHeader(http.StatusOK)
+			_ = json.NewEncoder(w).Encode(timer)
 			return
 		}
 	}
+	// TODO: 예외처리
+}
 
+func GetSupporting(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	invitationCode := vars["invitationCode"]
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	supportings := supportingMap[invitationCode]
+	if supportings != nil {
+		_ = json.NewEncoder(w).Encode(supportings)
+	} else {
+		_ = json.NewEncoder(w).Encode([]supporting{})
+	}
+}
+
+func MakeSupporting(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userId := vars["userId"]
+	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
+	id := uint(uIntUserId)
 	user := entity.User{Id: &id}
 	database.Connector.First(&user)
-	timer.Users = append(timer.Users, &user)
-	database.Connector.Updates(timer)
+	invitationCode := vars["invitationCode"]
+
+	supportings := supportingMap[invitationCode]
+	supportings = append(supportings, supporting{UserName: user.UserName, CreatedTime: entity.DateTime{Time: time.Now()}})
+	supportingMap[invitationCode] = supportings
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 }
 
 type Participant struct {
-	UserName string `json:"userName"`
+	UserName string        `json:"userName"`
+	ToDos    []entity.ToDo `json:"toDos"`
+}
+
+type supporting struct {
+	UserName    string   `json:"userName"`
+	CreatedTime DateTime `json:"createdTime"`
 }
 
 type CreateTimeRecordCommand struct {

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 	"net/http"
@@ -51,10 +52,15 @@ func ViewReport(w http.ResponseWriter, r *http.Request) {
 		totalDuration += timeRecord.EndTime.Sub(timeRecord.StartTime)
 	}
 
+	totalSeconds := totalDuration.Seconds()
+	hours := int(totalSeconds / 3600)
+	minutes := (int(totalSeconds) % 3600) / 60
+	seconds := (int(totalSeconds) % 3600) % 60
+
 	report := Report{
 		UserName:             user.UserName,
 		TimeBlocksByDateTime: toTimeBlocks(timeRecords, user.Timers, toDos, firstDayOfMonth, lastDayOfMonth),
-		TotalDuration:        totalDuration.String(),
+		TotalDuration:        fmt.Sprintf("%2dh%2dm%2ds", hours, minutes, seconds),
 	}
 	_ = json.NewEncoder(w).Encode(report)
 }
@@ -121,7 +127,7 @@ func toTimeBlocks(timeRecords []entity.TimeRecord, totalGroupTimers []entity.Tim
 					DisplayTime:       *timer.EndTime,
 					Duration:          int(timer.EndTime.Sub(timer.StartTime).Hours()),
 					ParticipantsCount: len(timer.Users),
-					Tag:               timer.Tags,
+					Tag:               timer.Tag,
 				})
 			}
 		}

@@ -9,14 +9,12 @@ const (
 )
 
 type ToDo struct {
-	Id            uint     `json:"id"`
-	UserId        uint     `gorm:"not null" json:"userId"`
-	Content       string   `gorm:"not null" json:"content"`
-	Completed     bool     `json:"completed"`
-	CreatedTime   DateTime `json:"createdTime"`
-	CompletedTime DateTime `json:"completedTime"`
-	ModifiedTime  DateTime `json:"modifiedTime"`
-	DeletedTime   DateTime `json:"deletedTime"`
+	Id            uint      `json:"id"`
+	UserId        uint      `gorm:"not null" json:"userId"`
+	Content       string    `gorm:"not null" json:"content"`
+	Completed     bool      `json:"completed"`
+	CreatedTime   DateTime  `json:"createdTime"`
+	CompletedTime *DateTime `json:"completedTime"`
 }
 
 type Timer struct {
@@ -24,9 +22,9 @@ type Timer struct {
 	Name           string    `gorm:"not null" json:"name"`
 	MakerId        uint      `gorm:"not null" json:"makerId"`
 	Type           TimerType `gorm:"not null" json:"type"`
-	Tags           string    `json:"tags"`
+	Tag            string    `json:"tag"`
 	InvitationCode *string   `json:"invitationCode"`
-	Users          []*User   `gorm:"many2many:participants;"`
+	Users          []*User   `gorm:"many2many:participants;" json:"users"`
 	StartTime      DateTime  `gorm:"not null" json:"startTime"`
 	EndTime        *DateTime `json:"endTime"`
 }
@@ -45,5 +43,5 @@ type User struct {
 	UserName   string  `json:"username"`
 	Password   string  `json:"password"`
 	Onboarding bool    `json:"onboarding"`
-	Timers     []Timer `gorm:"many2many:participants;"`
+	Timers     []Timer `gorm:"many2many:participants;" json:"timers"`
 }
