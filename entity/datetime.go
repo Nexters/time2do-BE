@@ -57,6 +57,14 @@ func (t DateTime) Min(u DateTime) DateTime {
 	}
 }
 
+func (t DateTime) Max(u DateTime) DateTime {
+	if t.Before(u) {
+		return u
+	} else {
+		return t
+	}
+}
+
 // Scan https://gorm.io/docs/data_types.html#Implements-Customized-Data-Type
 func (t *DateTime) Scan(b interface{}) (err error) {
 	switch x := b.(type) {

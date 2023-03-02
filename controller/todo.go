@@ -16,27 +16,38 @@ import (
 // @Accept  json
 // @Produce  json
 // @Router /task [post]
-func CreateToDo(w http.ResponseWriter, r *http.Request) {
+func CreateToDos(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)
-	var command CreateToDoCommand
-	_ = json.Unmarshal(requestBody, &command)
+	var commands []CreateToDoCommand
+	_ = json.Unmarshal(requestBody, &commands)
+
+	if len(commands) == 0 {
+		return
+	}
 
 	vars := mux.Vars(r)
 	userId := vars["userId"]
 	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
 	id := uint(uIntUserId)
 
-	toDo := entity.ToDo{
-		UserId:        id,
-		Content:       command.Content,
-		Completed:     command.Completed,
-		CreatedTime:   command.CreatedTime,
-		CompletedTime: command.CompletedTime,
+	var toDos []entity.ToDo
+	for _, command := range commands {
+		toDos = append(
+			toDos,
+			entity.ToDo{
+				UserId:        id,
+				Content:       command.Content,
+				Completed:     command.Completed,
+				CreatedTime:   command.CreatedTime,
+				CompletedTime: command.CompletedTime,
+			},
+		)
 	}
-	database.Connector.Create(&toDo)
+
+	database.Connector.CreateInBatches(&toDos, len(toDos))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(toDo)
+	_ = json.NewEncoder(w).Encode(toDos)
 }
 
 type CreateToDoCommand struct {
