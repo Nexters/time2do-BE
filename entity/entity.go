@@ -39,8 +39,7 @@ type TimeRecord struct {
 
 type User struct {
 	Id         *uint   `json:"id"`
-	IdToken    string  `json:"idToken"`
-	UserName   string  `json:"username"`
+	UserName   string  `json:"userName"`
 	Password   string  `json:"password"`
 	Onboarding bool    `json:"onboarding"`
 	Timers     []Timer `gorm:"many2many:participants;" json:"timers"`

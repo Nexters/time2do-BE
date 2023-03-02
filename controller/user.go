@@ -12,7 +12,6 @@ import (
 	_ "time2do/docs"
 
 	"github.com/gorilla/mux"
-	"github.com/thanhpk/randstr"
 )
 
 // @Summary 유저 생성하기
@@ -39,7 +38,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user = &entity.User{
-		IdToken:    randstr.Hex(4),
 		UserName:   command.UserName,
 		Password:   command.Password,
 		Onboarding: false,
