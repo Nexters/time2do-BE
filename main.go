@@ -69,8 +69,8 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/users/{userId}/timers/{timerId}/timeRecords", controller.CreateTimerRecord).Methods("POST")
 
 	router.HandleFunc("/users/{userId}/tasks", controller.CreateToDos).Methods("POST")
-	router.HandleFunc("/users/{userId}/tasks", controller.GetToDoById).Methods("GET")
-	router.HandleFunc("/tasks", controller.GetAllToDo).Methods("GET")
+	router.HandleFunc("/users/{userId}/tasks", controller.GetToDoById).Methods("GET") // swg 0
+	router.HandleFunc("/tasks", controller.GetAllToDo).Methods("GET")                 // swg 0
 	router.HandleFunc("/tasks/{id}", controller.GetToDoById).Methods("GET")
 
 	// Swagger

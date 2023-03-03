@@ -31,6 +31,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "User"
+                ],
                 "summary": "유저 로그인",
                 "parameters": [
                     {
@@ -65,6 +68,21 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/timers": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Timer"
+                ],
+                "summary": "타이머 전부 조회",
+                "responses": {}
+            }
+        },
         "/users": {
             "get": {
                 "consumes": [
@@ -72,6 +90,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "User"
                 ],
                 "summary": "유저 전부 조회",
                 "responses": {}
@@ -82,6 +103,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "User"
                 ],
                 "summary": "유저 생성",
                 "parameters": [
