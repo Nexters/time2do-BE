@@ -132,6 +132,7 @@ func Participate(w http.ResponseWriter, r *http.Request) {
 		Find(&timer); err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(err.Error)
 		return
 	}
 
