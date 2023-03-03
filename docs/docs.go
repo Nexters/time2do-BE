@@ -66,6 +66,16 @@ const docTemplate = `{
             }
         },
         "/users": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "유저 전부 조회",
+                "responses": {}
+            },
             "post": {
                 "consumes": [
                     "application/json"

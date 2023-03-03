@@ -80,6 +80,13 @@ paths:
       responses: {}
       summary: 모든 ToDo들 가져오기
   /users:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      summary: 유저 전부 조회
     post:
       consumes:
       - application/json

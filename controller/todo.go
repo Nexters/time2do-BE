@@ -74,15 +74,6 @@ func GetAllToDo(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(tasks)
 }
 
-// func GetToDoById(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	key := vars["id"]
-// 	var task entity.ToDo
-// 	database.Connector.First(&task, key)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	_ = json.NewEncoder(w).Encode(task)
-// }
-
 func GetToDosByUserId(userId uint) ([]entity.ToDo, error) {
 	var toDos []entity.ToDo
 	if err := database.Connector.Where("user_id = ?", userId).Find(&toDos).Error; err != nil {
