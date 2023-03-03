@@ -47,7 +47,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/task": {
+        "/login": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -55,8 +55,28 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "ToDo (Task)"
+                "summary": "User Login",
+                "parameters": [
+                    {
+                        "description": "User credentials",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.UserCommand"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/task": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
                 ],
                 "summary": "할일 생성하기",
                 "responses": {}
@@ -70,9 +90,6 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "ToDo (Task)"
-                ],
                 "summary": "아무 조건 없이 모든 ToDo 불러오기",
                 "responses": {}
             }
@@ -85,19 +102,7 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "User"
-                ],
                 "summary": "유저 생성하기",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Account ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {}
             }
         },
@@ -108,9 +113,6 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
-                ],
-                "tags": [
-                    "User"
                 ],
                 "summary": "유저 ID 로 조회하기",
                 "responses": {}
@@ -124,11 +126,21 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "User"
-                ],
                 "summary": "아무 조건 없이 모든 User 불러오기",
                 "responses": {}
+            }
+        }
+    },
+    "definitions": {
+        "controller.UserCommand": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                }
             }
         }
     }
