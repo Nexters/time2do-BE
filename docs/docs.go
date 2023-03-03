@@ -116,18 +116,6 @@ const docTemplate = `{
                                 "$ref": "#/definitions/entity.ToDo"
                             }
                         }
-                    },
-                    "400": {
-                        "description": "잘못된 사용자 ID",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "서버 오류",
-                        "schema": {
-                            "type": "string"
-                        }
                     }
                 }
             }
