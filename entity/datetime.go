@@ -78,8 +78,10 @@ func (t *DateTime) Scan(b interface{}) (err error) {
 
 // Value https://gorm.io/docs/data_types.html#Implements-Customized-Data-Type
 func (t DateTime) Value() (driver.Value, error) {
+	loc, _ := time.LoadLocation("Asia/Seoul")
 	if t.Time.IsZero() {
 		return nil, nil
 	}
-	return t.Time.Format("2006-01-02 15:04:05"), nil
+
+	return t.Time.In(loc).Format("2006-01-02 15:04:05"), nil
 }
