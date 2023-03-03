@@ -247,7 +247,7 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 		timerIdsByLocalTimerId := make(map[uint]uint)
 		for timerId, timerState := range timerStatesBylocalTimerId {
 			var count int64
-			database.Connector.Model(&entity.Timer{}).Where("start_time = ?", *timerState.StartTime).Count(&count)
+			tx.Model(&entity.Timer{}).Where("start_time = ?", *timerState.StartTime).Count(&count)
 
 			if count == 0 {
 				timer := entity.Timer{
@@ -258,7 +258,7 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 					EndTime:   &timerState.EndTime,
 				}
 
-				if err := database.Connector.Create(&timer).Error; err != nil {
+				if err := tx.Create(&timer).Error; err != nil {
 					return err
 				}
 				timerIdsByLocalTimerId[timerId] = *timer.Id
@@ -267,7 +267,7 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 
 		for _, timeRecord := range commands {
 			var count int64
-			database.Connector.Model(&entity.TimeRecord{}).Where("start_time = ?", timeRecord.StartTime).Count(&count)
+			tx.Model(&entity.TimeRecord{}).Where("start_time = ?", timeRecord.StartTime).Count(&count)
 
 			if count == 0 {
 				timeRecords = append(timeRecords, entity.TimeRecord{TimerId: timerIdsByLocalTimerId[timeRecord.TimerId], UserId: id, StartTime: timeRecord.StartTime, EndTime: timeRecord.EndTime})
@@ -278,7 +278,7 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 			return errors.New("duplicated time records")
 		}
 
-		if err := database.Connector.CreateInBatches(&timeRecords, len(timeRecords)).Error; err != nil {
+		if err := tx.CreateInBatches(&timeRecords, len(timeRecords)).Error; err != nil {
 			return err
 		}
 		return nil
