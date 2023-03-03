@@ -3,6 +3,7 @@ package controller
 import (
 	"crypto/rand"
 	"encoding/json"
+	"errors"
 	"gorm.io/gorm"
 	"io"
 	"net/http"
@@ -73,6 +74,7 @@ func CreateTimerRecord(w http.ResponseWriter, r *http.Request) {
 	_ = json.Unmarshal(requestBody, &createTimeRecordCommand)
 
 	// TODO: 동일한 시간에 다른 타이머 기록이 있을 경우 예외 발생
+
 	timeRecord := entity.TimeRecord{TimerId: uint(uIntTimerId), UserId: uint(uIntUserId), StartTime: createTimeRecordCommand.StartTime, EndTime: createTimeRecordCommand.EndTime}
 	database.Connector.Create(timeRecord)
 	w.Header().Set("Content-Type", "application/json")
@@ -224,7 +226,7 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 
 	var timeRecords []entity.TimeRecord
 
-	_ = database.Connector.Transaction(func(tx *gorm.DB) error {
+	err := database.Connector.Transaction(func(tx *gorm.DB) error {
 		user := entity.User{Id: &id}
 		database.Connector.First(&user)
 
@@ -244,6 +246,13 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 
 		timerIdsByLocalTimerId := make(map[uint]uint)
 		for timerId, timerName := range localTimerIdsByTimerName {
+			var count int64
+			database.Connector.Model(&entity.Timer{}).Where("start_time = ?", *startTime).Count(&count)
+
+			if count != 0 {
+				return errors.New("duplicated timer")
+			}
+
 			timer := entity.Timer{
 				Name:      timerName,
 				MakerId:   id,
@@ -259,7 +268,16 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, timeRecord := range commands {
-			timeRecords = append(timeRecords, entity.TimeRecord{TimerId: timerIdsByLocalTimerId[timeRecord.TimerId], UserId: id, StartTime: timeRecord.StartTime, EndTime: timeRecord.EndTime})
+			var count int64
+			database.Connector.Model(&entity.TimeRecord{}).Where("start_time = ?", timeRecord.StartTime).Count(&count)
+
+			if count == 0 {
+				timeRecords = append(timeRecords, entity.TimeRecord{TimerId: timerIdsByLocalTimerId[timeRecord.TimerId], UserId: id, StartTime: timeRecord.StartTime, EndTime: timeRecord.EndTime})
+			}
+		}
+
+		if len(timeRecords) == 0 {
+			return errors.New("duplicated time records")
 		}
 
 		if err := database.Connector.CreateInBatches(&timeRecords, len(timeRecords)).Error; err != nil {
@@ -267,6 +285,11 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
