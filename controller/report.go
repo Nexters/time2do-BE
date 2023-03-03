@@ -15,17 +15,17 @@ import (
 type DateTime = entity.DateTime
 
 func ViewReport(w http.ResponseWriter, r *http.Request) {
+	loc, _ := time.LoadLocation("Asia/Seoul")
 	vars := mux.Vars(r)
 	params := r.URL.Query()
 	parsed, _ := time.Parse("2006-01", params["yearMonth"][0])
 	userId := vars["id"]
 	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
 
-	yearMonth := DateTime{Time: parsed}
+	yearMonth := DateTime{Time: parsed.In(loc)}
 	firstDayOfMonth := yearMonth.FirstDayOfMonth()
 	lastDayOfMonth := yearMonth.LastDayOfMonth()
 
-	// TODO: 트랜잭션 처리
 	var timeRecords []entity.TimeRecord
 	database.Connector.
 		Where("user_id = ? AND start_time BETWEEN ? AND ?", userId, firstDayOfMonth, lastDayOfMonth).
