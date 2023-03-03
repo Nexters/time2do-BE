@@ -8,9 +8,9 @@ import (
 	"time2do/database"
 
 	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
-	"github.com/rs/cors"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -91,5 +91,12 @@ func main() {
 	log.Println("[*] Starting the HTTP server on port 8888")
 	router := mux.NewRouter().StrictSlash(true)
 	initHandlers(router)
-	log.Fatal(http.ListenAndServe(":8888", cors.AllowAll().Handler(router)))
+
+	corsHandler := handlers.CORS(
+		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+		handlers.AllowedOrigins([]string{"*"}),
+	)
+
+	log.Fatal(http.ListenAndServe(":8888", corsHandler(router)))
 }
