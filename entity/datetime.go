@@ -67,9 +67,10 @@ func (t DateTime) Max(u DateTime) DateTime {
 
 // Scan https://gorm.io/docs/data_types.html#Implements-Customized-Data-Type
 func (t *DateTime) Scan(b interface{}) (err error) {
+	loc, _ := time.LoadLocation("Asia/Seoul")
 	switch x := b.(type) {
 	case time.Time:
-		t.Time = x
+		t.Time = x.In(loc)
 	default:
 		err = fmt.Errorf("unsupported scan type %T", b)
 	}
