@@ -27,22 +27,32 @@ func CreateToDos(w http.ResponseWriter, r *http.Request) {
 
 	var toDos []entity.ToDo
 	for _, command := range commands {
-		toDos = append(
-			toDos,
-			entity.ToDo{
-				UserId:        id,
-				Content:       command.Content,
-				Completed:     command.Completed,
-				CreatedTime:   command.CreatedTime,
-				CompletedTime: command.CompletedTime,
-			},
-		)
+		var count int64
+		database.Connector.Model(&entity.ToDo{}).Where("created_time = ?", command.CreatedTime).Count(&count)
+
+		if count == 0 {
+			toDos = append(
+				toDos,
+				entity.ToDo{
+					UserId:        id,
+					Content:       command.Content,
+					Completed:     command.Completed,
+					CreatedTime:   command.CreatedTime,
+					CompletedTime: command.CompletedTime,
+				},
+			)
+		}
 	}
 
-	database.Connector.CreateInBatches(&toDos, len(toDos))
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(toDos)
+	if len(toDos) == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+	} else {
+		database.Connector.CreateInBatches(&toDos, len(toDos))
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(toDos)
+	}
 }
 
 type CreateToDoCommand struct {

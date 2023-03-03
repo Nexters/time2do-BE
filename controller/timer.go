@@ -3,6 +3,8 @@ package controller
 import (
 	"crypto/rand"
 	"encoding/json"
+	"errors"
+	"gorm.io/gorm"
 	"io"
 	"net/http"
 	"strconv"
@@ -72,6 +74,7 @@ func CreateTimerRecord(w http.ResponseWriter, r *http.Request) {
 	_ = json.Unmarshal(requestBody, &createTimeRecordCommand)
 
 	// TODO: 동일한 시간에 다른 타이머 기록이 있을 경우 예외 발생
+
 	timeRecord := entity.TimeRecord{TimerId: uint(uIntTimerId), UserId: uint(uIntUserId), StartTime: createTimeRecordCommand.StartTime, EndTime: createTimeRecordCommand.EndTime}
 	database.Connector.Create(timeRecord)
 	w.Header().Set("Content-Type", "application/json")
@@ -221,48 +224,72 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
 	id := uint(uIntUserId)
 
-	user := entity.User{Id: &id}
-	database.Connector.First(&user)
-
-	var startTime *DateTime
-	var endTime DateTime
-	localTimerIdsByTimerName := make(map[uint]string)
-	for _, command := range commands {
-		if startTime == nil {
-			startTime = &command.StartTime
-		} else {
-			minTime := (*startTime).Min(command.StartTime)
-			startTime = &minTime
-		}
-		endTime = endTime.Max(command.EndTime)
-		localTimerIdsByTimerName[command.TimerId] = command.TimerName
-	}
-
-	var timers []entity.Timer
-	timerIdsByLocalTimerId := make(map[uint]uint)
-	for timerId, timerName := range localTimerIdsByTimerName {
-		timer := entity.Timer{
-			Name:      timerName,
-			MakerId:   id,
-			Type:      entity.Personal,
-			StartTime: *startTime,
-			EndTime:   &endTime,
-		}
-		timers = append(timers, timer)
-
-		// TODO: 중복 예외처리
-		database.Connector.Create(&timer)
-		timerIdsByLocalTimerId[timerId] = *timer.Id
-	}
-
-	database.Connector.CreateInBatches(&timers, len(timers))
-
 	var timeRecords []entity.TimeRecord
-	for _, timeRecord := range commands {
-		timeRecords = append(timeRecords, entity.TimeRecord{TimerId: timerIdsByLocalTimerId[timeRecord.TimerId], UserId: id, StartTime: timeRecord.StartTime, EndTime: timeRecord.EndTime})
-	}
 
-	database.Connector.CreateInBatches(&timeRecords, len(timeRecords))
+	err := database.Connector.Transaction(func(tx *gorm.DB) error {
+		user := entity.User{Id: &id}
+		database.Connector.First(&user)
+
+		var startTime *DateTime
+		var endTime DateTime
+		localTimerIdsByTimerName := make(map[uint]string)
+		for _, command := range commands {
+			if startTime == nil {
+				startTime = &command.StartTime
+			} else {
+				minTime := (*startTime).Min(command.StartTime)
+				startTime = &minTime
+			}
+			endTime = endTime.Max(command.EndTime)
+			localTimerIdsByTimerName[command.TimerId] = command.TimerName
+		}
+
+		timerIdsByLocalTimerId := make(map[uint]uint)
+		for timerId, timerName := range localTimerIdsByTimerName {
+			var count int64
+			database.Connector.Model(&entity.Timer{}).Where("start_time = ?", *startTime).Count(&count)
+
+			if count != 0 {
+				return errors.New("duplicated timer")
+			}
+
+			timer := entity.Timer{
+				Name:      timerName,
+				MakerId:   id,
+				Type:      entity.Personal,
+				StartTime: *startTime,
+				EndTime:   &endTime,
+			}
+
+			if err := database.Connector.Create(&timer).Error; err != nil {
+				return err
+			}
+			timerIdsByLocalTimerId[timerId] = *timer.Id
+		}
+
+		for _, timeRecord := range commands {
+			var count int64
+			database.Connector.Model(&entity.TimeRecord{}).Where("start_time = ?", timeRecord.StartTime).Count(&count)
+
+			if count == 0 {
+				timeRecords = append(timeRecords, entity.TimeRecord{TimerId: timerIdsByLocalTimerId[timeRecord.TimerId], UserId: id, StartTime: timeRecord.StartTime, EndTime: timeRecord.EndTime})
+			}
+		}
+
+		if len(timeRecords) == 0 {
+			return errors.New("duplicated time records")
+		}
+
+		if err := database.Connector.CreateInBatches(&timeRecords, len(timeRecords)).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
