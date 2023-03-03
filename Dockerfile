@@ -1,6 +1,12 @@
 # Use the official Golang image as the base image
 FROM golang:1.20
 
+ENV SWAGGER_UI_CORS=true
+ENV SWAGGER_UI_CORS_MAX_AGE=3600
+ENV SWAGGER_UI_CORS_ALLOWED_ORIGINS=*
+ENV SWAGGER_UI_CORS_ALLOWED_METHODS=GET,POST,PUT,DELETE,OPTIONS
+ENV SWAGGER_UI_CORS_ALLOWED_HEADERS=Content-Type,Authorization
+
 # Set the working directory
 WORKDIR /go/src/app
 
