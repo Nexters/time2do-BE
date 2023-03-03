@@ -126,10 +126,14 @@ func Participate(w http.ResponseWriter, r *http.Request) {
 
 	var timer entity.Timer
 
-	database.Connector.
+	if err := database.Connector.
 		Where(&entity.Timer{InvitationCode: &invitationCode}).
 		Preload("Users").
-		Find(&timer)
+		Find(&timer); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 
 	id := uint(uIntUserId)
 	contains := false
