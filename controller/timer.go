@@ -3,6 +3,7 @@ package controller
 import (
 	"crypto/rand"
 	"encoding/json"
+	"gorm.io/gorm"
 	"io"
 	"net/http"
 	"strconv"
@@ -221,48 +222,51 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
 	id := uint(uIntUserId)
 
-	user := entity.User{Id: &id}
-	database.Connector.First(&user)
-
-	var startTime *DateTime
-	var endTime DateTime
-	localTimerIdsByTimerName := make(map[uint]string)
-	for _, command := range commands {
-		if startTime == nil {
-			startTime = &command.StartTime
-		} else {
-			minTime := (*startTime).Min(command.StartTime)
-			startTime = &minTime
-		}
-		endTime = endTime.Max(command.EndTime)
-		localTimerIdsByTimerName[command.TimerId] = command.TimerName
-	}
-
-	var timers []entity.Timer
-	timerIdsByLocalTimerId := make(map[uint]uint)
-	for timerId, timerName := range localTimerIdsByTimerName {
-		timer := entity.Timer{
-			Name:      timerName,
-			MakerId:   id,
-			Type:      entity.Personal,
-			StartTime: *startTime,
-			EndTime:   &endTime,
-		}
-		timers = append(timers, timer)
-
-		// TODO: 중복 예외처리
-		database.Connector.Create(&timer)
-		timerIdsByLocalTimerId[timerId] = *timer.Id
-	}
-
-	database.Connector.CreateInBatches(&timers, len(timers))
-
 	var timeRecords []entity.TimeRecord
-	for _, timeRecord := range commands {
-		timeRecords = append(timeRecords, entity.TimeRecord{TimerId: timerIdsByLocalTimerId[timeRecord.TimerId], UserId: id, StartTime: timeRecord.StartTime, EndTime: timeRecord.EndTime})
-	}
 
-	database.Connector.CreateInBatches(&timeRecords, len(timeRecords))
+	_ = database.Connector.Transaction(func(tx *gorm.DB) error {
+		user := entity.User{Id: &id}
+		database.Connector.First(&user)
+
+		var startTime *DateTime
+		var endTime DateTime
+		localTimerIdsByTimerName := make(map[uint]string)
+		for _, command := range commands {
+			if startTime == nil {
+				startTime = &command.StartTime
+			} else {
+				minTime := (*startTime).Min(command.StartTime)
+				startTime = &minTime
+			}
+			endTime = endTime.Max(command.EndTime)
+			localTimerIdsByTimerName[command.TimerId] = command.TimerName
+		}
+
+		timerIdsByLocalTimerId := make(map[uint]uint)
+		for timerId, timerName := range localTimerIdsByTimerName {
+			timer := entity.Timer{
+				Name:      timerName,
+				MakerId:   id,
+				Type:      entity.Personal,
+				StartTime: *startTime,
+				EndTime:   &endTime,
+			}
+
+			if err := database.Connector.Create(&timer).Error; err != nil {
+				return err
+			}
+			timerIdsByLocalTimerId[timerId] = *timer.Id
+		}
+
+		for _, timeRecord := range commands {
+			timeRecords = append(timeRecords, entity.TimeRecord{TimerId: timerIdsByLocalTimerId[timeRecord.TimerId], UserId: id, StartTime: timeRecord.StartTime, EndTime: timeRecord.EndTime})
+		}
+
+		if err := database.Connector.CreateInBatches(&timeRecords, len(timeRecords)).Error; err != nil {
+			return err
+		}
+		return nil
+	})
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
