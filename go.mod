@@ -4,18 +4,18 @@ go 1.20
 
 require (
 	github.com/go-sql-driver/mysql v1.7.0
+	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.5.0
-	github.com/rs/cors v1.8.3
 	github.com/swaggo/http-swagger v1.3.3
 	github.com/swaggo/swag v1.8.10
-	github.com/thanhpk/randstr v1.0.4
 	gorm.io/driver/mysql v1.4.7
 	gorm.io/gorm v1.24.5
 )
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/spec v0.20.8 // indirect
