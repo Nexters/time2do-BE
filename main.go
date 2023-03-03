@@ -1,15 +1,16 @@
 package main
 
 import (
-	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
-	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"os"
 	"time2do/controller"
 	"time2do/database"
+
+	_ "github.com/go-sql-driver/mysql" //Required for MySQL dialect
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -52,6 +53,8 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/users/{id}", controller.GetUserByID).Methods("GET")
 	router.HandleFunc("/users/{id}", controller.UpdateUser).Methods("PUT")
 	router.HandleFunc("/users/{id}/reports", controller.ViewReport).Methods("GET")
+
+	router.HandleFunc("/login", controller.LoginUser).Methods("POST")
 
 	router.HandleFunc("/timers", controller.CreateTimer).Methods("POST")
 	router.HandleFunc("/timers", controller.GetAllTimers).Methods("GET")

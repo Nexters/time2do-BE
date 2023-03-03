@@ -19,7 +19,6 @@ import (
 // @Tag User
 // @Accept  json
 // @Produce  json
-// @Param			id	test		int	true	"test string"
 // @Router /user [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)
@@ -113,4 +112,47 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 type updateUserCommand struct {
 	UserName   *string `json:"userName"`
 	OnBoarding *bool   `json:"onBoarding"`
+}
+
+type UserCommand struct {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+}
+
+type ErrorResponse struct {
+	Message string `json:"message"`
+}
+
+// @Summary User Login
+// @Tag User
+// @Accept json
+// @Produce json
+// @Param body body UserCommand true "User credentials"
+// @Router /login [post]
+func LoginUser(w http.ResponseWriter, r *http.Request) {
+	requestBody, _ := io.ReadAll(r.Body)
+	fmt.Printf("Request body: %s\n", string(requestBody))
+
+	var command UserCommand
+	_ = json.Unmarshal(requestBody, &command)
+
+	var user *entity.User
+	database.Connector.Where(&entity.User{UserName: command.UserName}).First(&user)
+
+	if user.Id == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		_ = json.NewEncoder(w).Encode(ErrorResponse{Message: "존재하지 않는 유저입니다."})
+		return
+	}
+
+	if user.Password != command.Password {
+		w.WriteHeader(http.StatusUnauthorized)
+		_ = json.NewEncoder(w).Encode("잘못된 비밀번호 입니다.")
+		return
+	}
+
+	// TODO: Create and return an authentication token
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(user)
 }
