@@ -71,6 +71,8 @@ paths:
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       summary: 유저 로그인
+      tags:
+      - User
   /tasks:
     get:
       consumes:
@@ -79,6 +81,16 @@ paths:
       - application/json
       responses: {}
       summary: 모든 ToDo들 가져오기
+  /timers:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      summary: 타이머 전부 조회
+      tags:
+      - Timer
   /users:
     get:
       consumes:
@@ -87,6 +99,8 @@ paths:
       - application/json
       responses: {}
       summary: 유저 전부 조회
+      tags:
+      - User
     post:
       consumes:
       - application/json
@@ -101,6 +115,8 @@ paths:
       - application/json
       responses: {}
       summary: 유저 생성
+      tags:
+      - User
   /users/{userId}/tasks:
     get:
       consumes:

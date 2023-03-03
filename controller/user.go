@@ -34,6 +34,7 @@ type ErrorResponse struct {
 }
 
 // @Summary 유저 생성
+// @Tags User
 // @Accept json
 // @Produce json
 // @Param user body CreateUserCommand true "User credentials"
@@ -76,6 +77,7 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary 유저 전부 조회
+// @Tags User
 // @Accept json
 // @Produce json
 // @Router /users [get]
@@ -116,6 +118,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary 유저 로그인
+// @Tags User
 // @Accept json
 // @Produce json
 // @Param user body UserCommand true "User credentials"

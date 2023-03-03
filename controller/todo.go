@@ -11,6 +11,21 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type CreateToDoCommand struct {
+	Content       string    `json:"content"`
+	Completed     bool      `json:"completed"`
+	CreatedTime   DateTime  `json:"createdTime"`
+	CompletedTime *DateTime `json:"completedTime"`
+}
+
+func GetToDosByUserId(userId uint) ([]entity.ToDo, error) {
+	var toDos []entity.ToDo
+	if err := database.Connector.Where("user_id = ?", userId).Find(&toDos).Error; err != nil {
+		return nil, err
+	}
+	return toDos, nil
+}
+
 func CreateToDos(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)
 	var commands []CreateToDoCommand
@@ -55,13 +70,6 @@ func CreateToDos(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type CreateToDoCommand struct {
-	Content       string    `json:"content"`
-	Completed     bool      `json:"completed"`
-	CreatedTime   DateTime  `json:"createdTime"`
-	CompletedTime *DateTime `json:"completedTime"`
-}
-
 // @Summary 모든 ToDo들 가져오기
 // @Accept json
 // @Produce json
@@ -72,14 +80,6 @@ func GetAllToDo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(tasks)
-}
-
-func GetToDosByUserId(userId uint) ([]entity.ToDo, error) {
-	var toDos []entity.ToDo
-	if err := database.Connector.Where("user_id = ?", userId).Find(&toDos).Error; err != nil {
-		return nil, err
-	}
-	return toDos, nil
 }
 
 // @Summary userId 로 ToDo들 가져오기

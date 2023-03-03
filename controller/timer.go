@@ -4,13 +4,14 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"errors"
-	"gorm.io/gorm"
 	"io"
 	"net/http"
 	"strconv"
 	"time"
 	"time2do/database"
 	"time2do/entity"
+
+	"gorm.io/gorm"
 
 	"github.com/gorilla/mux"
 )
@@ -52,6 +53,11 @@ type createTimerCommand struct {
 	EndTime   *DateTime        `json:"endTime"`
 }
 
+// @Summary 타이머 전부 조회
+// @Tags Timer
+// @Accept json
+// @Produce json
+// @Router /timers [get]
 func GetAllTimers(w http.ResponseWriter, _ *http.Request) {
 	var timers []entity.Timer
 	database.Connector.Find(&timers)
