@@ -3,23 +3,20 @@ package controller
 import (
 	"crypto/rand"
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"io"
 	"net/http"
 	"strconv"
 	"time"
 	"time2do/database"
 	"time2do/entity"
+
+	"github.com/gorilla/mux"
 )
 
 const otpChars = "1234567890"
 
 var supportingMap = map[string][]supporting{}
 
-// @Summary 타이머 생성하기
-// @Accept  json
-// @Produce  json
-// @Router /group [post]
 func CreateTimer(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)
 	var command createTimerCommand
@@ -53,10 +50,6 @@ type createTimerCommand struct {
 	EndTime   *DateTime        `json:"endTime"`
 }
 
-// @Summary 그룹 조회하기
-// @Accept  json
-// @Produce  json
-// @Router /groups [get]
 func GetAllTimers(w http.ResponseWriter, _ *http.Request) {
 	var timers []entity.Timer
 	database.Connector.Find(&timers)
