@@ -129,10 +129,10 @@ func Participate(w http.ResponseWriter, r *http.Request) {
 	if err := database.Connector.
 		Where(&entity.Timer{InvitationCode: &invitationCode}).
 		Preload("Users").
-		Find(&timer); err != nil {
+		Find(&timer).Error; err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
-		_ = json.NewEncoder(w).Encode(err.Error)
+		_ = json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
