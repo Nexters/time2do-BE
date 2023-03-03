@@ -126,10 +126,14 @@ func Participate(w http.ResponseWriter, r *http.Request) {
 
 	var timer entity.Timer
 
-	database.Connector.
+	if err := database.Connector.
 		Where(&entity.Timer{InvitationCode: &invitationCode}).
 		Preload("Users").
-		Find(&timer)
+		Find(&timer); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 
 	id := uint(uIntUserId)
 	contains := false
@@ -230,46 +234,44 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 		user := entity.User{Id: &id}
 		database.Connector.First(&user)
 
-		var startTime *DateTime
-		var endTime DateTime
-		localTimerIdsByTimerName := make(map[uint]string)
+		timerStatesBylocalTimerId := make(map[uint]TimerState)
 		for _, command := range commands {
-			if startTime == nil {
-				startTime = &command.StartTime
+			timerState := timerStatesBylocalTimerId[command.TimerId]
+			timerState.TimerName = command.TimerName
+			if timerState.StartTime == nil {
+				timerState.StartTime = &DateTime{Time: command.StartTime.Time}
 			} else {
-				minTime := (*startTime).Min(command.StartTime)
-				startTime = &minTime
+				minTime := (*timerState.StartTime).Min(command.StartTime)
+				timerState.StartTime = &minTime
 			}
-			endTime = endTime.Max(command.EndTime)
-			localTimerIdsByTimerName[command.TimerId] = command.TimerName
+			timerState.EndTime = timerState.EndTime.Max(command.EndTime)
+			timerStatesBylocalTimerId[command.TimerId] = timerState
 		}
 
 		timerIdsByLocalTimerId := make(map[uint]uint)
-		for timerId, timerName := range localTimerIdsByTimerName {
+		for timerId, timerState := range timerStatesBylocalTimerId {
 			var count int64
-			database.Connector.Model(&entity.Timer{}).Where("start_time = ?", *startTime).Count(&count)
+			tx.Model(&entity.Timer{}).Where("start_time = ?", *timerState.StartTime).Count(&count)
 
-			if count != 0 {
-				return errors.New("duplicated timer")
-			}
+			if count == 0 {
+				timer := entity.Timer{
+					Name:      timerState.TimerName,
+					MakerId:   id,
+					Type:      entity.Personal,
+					StartTime: *timerState.StartTime,
+					EndTime:   &timerState.EndTime,
+				}
 
-			timer := entity.Timer{
-				Name:      timerName,
-				MakerId:   id,
-				Type:      entity.Personal,
-				StartTime: *startTime,
-				EndTime:   &endTime,
+				if err := tx.Create(&timer).Error; err != nil {
+					return err
+				}
+				timerIdsByLocalTimerId[timerId] = *timer.Id
 			}
-
-			if err := database.Connector.Create(&timer).Error; err != nil {
-				return err
-			}
-			timerIdsByLocalTimerId[timerId] = *timer.Id
 		}
 
 		for _, timeRecord := range commands {
 			var count int64
-			database.Connector.Model(&entity.TimeRecord{}).Where("start_time = ?", timeRecord.StartTime).Count(&count)
+			tx.Model(&entity.TimeRecord{}).Where("start_time = ?", timeRecord.StartTime).Count(&count)
 
 			if count == 0 {
 				timeRecords = append(timeRecords, entity.TimeRecord{TimerId: timerIdsByLocalTimerId[timeRecord.TimerId], UserId: id, StartTime: timeRecord.StartTime, EndTime: timeRecord.EndTime})
@@ -280,7 +282,7 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 			return errors.New("duplicated time records")
 		}
 
-		if err := database.Connector.CreateInBatches(&timeRecords, len(timeRecords)).Error; err != nil {
+		if err := tx.CreateInBatches(&timeRecords, len(timeRecords)).Error; err != nil {
 			return err
 		}
 		return nil
@@ -289,11 +291,17 @@ func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(timeRecords)
 	}
+}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(timeRecords)
+type TimerState struct {
+	TimerName string    `json:"timerName"`
+	StartTime *DateTime `json:"startTime"`
+	EndTime   DateTime  `json:"endTime"`
 }
 
 type SyncTimerRecordCommand struct {
