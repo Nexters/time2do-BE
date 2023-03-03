@@ -12,7 +12,7 @@ const docTemplate = `{
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "API Support",
-            "email": "soberkoder@swagger.io"
+            "email": "devgunho@gmail.com"
         },
         "license": {
             "name": "Apache 2.0",
@@ -23,30 +23,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/group": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "타이머 생성하기",
-                "responses": {}
-            }
-        },
-        "/groups": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "그룹 조회하기",
-                "responses": {}
-            }
-        },
         "/login": {
             "post": {
                 "consumes": [
@@ -55,11 +31,11 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "User Login",
+                "summary": "유저 로그인",
                 "parameters": [
                     {
                         "description": "User credentials",
-                        "name": "body",
+                        "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -67,19 +43,14 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
-            }
-        },
-        "/task": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "할일 생성하기",
-                "responses": {}
+                "responses": {
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/tasks": {
@@ -90,11 +61,11 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "아무 조건 없이 모든 ToDo 불러오기",
+                "summary": "모든 ToDo들 가져오기",
                 "responses": {}
             }
         },
-        "/user": {
+        "/users": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -102,36 +73,86 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "유저 생성하기",
+                "summary": "유저 생성",
+                "parameters": [
+                    {
+                        "description": "User credentials",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.CreateUserCommand"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },
-        "/user/{id}": {
+        "/users/{userId}/tasks": {
             "get": {
+                "description": "userId에 해당하는 사용자의 ToDo 목록을 가져옴",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "유저 ID 로 조회하기",
-                "responses": {}
-            }
-        },
-        "/users": {
-            "get": {
-                "consumes": [
-                    "application/json"
+                "summary": "userId 로 ToDo들 가져오기",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "사용자 ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
                 ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "아무 조건 없이 모든 User 불러오기",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.ToDo"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 사용자 ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
+        "controller.CreateUserCommand": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "controller.UserCommand": {
             "type": "object",
             "properties": {
@@ -140,6 +161,37 @@ const docTemplate = `{
                 },
                 "userName": {
                     "type": "string"
+                }
+            }
+        },
+        "entity.DateTime": {
+            "type": "object",
+            "properties": {
+                "time.Time": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.ToDo": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "boolean"
+                },
+                "completedTime": {
+                    "$ref": "#/definitions/entity.DateTime"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "createdTime": {
+                    "$ref": "#/definitions/entity.DateTime"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
                 }
             }
         }
@@ -152,8 +204,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8888",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Orders API",
-	Description:      "This is a sample serice for managing orders",
+	Title:            "Swagger Time2Do API",
+	Description:      "This is Time2Do API Server",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

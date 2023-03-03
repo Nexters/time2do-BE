@@ -48,8 +48,8 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 func initHandlers(router *mux.Router) {
 	router.HandleFunc("/", healthCheck).Methods("GET")
 
-	router.HandleFunc("/users", controller.GetAllUser).Methods("GET")
-	router.HandleFunc("/users", controller.CreateUser).Methods("POST")
+	router.HandleFunc("/users", controller.GetAllUser).Methods("GET")  // swg 0
+	router.HandleFunc("/users", controller.CreateUser).Methods("POST") // swg 0
 	router.HandleFunc("/users/{id}", controller.GetUserByID).Methods("GET")
 	router.HandleFunc("/users/{id}", controller.UpdateUser).Methods("PUT")
 	router.HandleFunc("/users/{id}/timeRecords", controller.SyncTimeRecords).Methods("POST")
@@ -68,6 +68,7 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/users/{userId}/timers/{timerId}/timeRecords", controller.CreateTimerRecord).Methods("POST")
 
 	router.HandleFunc("/users/{userId}/tasks", controller.CreateToDos).Methods("POST")
+	router.HandleFunc("/users/{userId}/tasks", controller.GetToDoById).Methods("GET")
 	router.HandleFunc("/tasks", controller.GetAllToDo).Methods("GET")
 	router.HandleFunc("/tasks/{id}", controller.GetToDoById).Methods("GET")
 
@@ -75,12 +76,12 @@ func initHandlers(router *mux.Router) {
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 }
 
-// @title Orders API
+// @title Swagger Time2Do API
 // @version 1.0
-// @description This is a sample serice for managing orders
+// @description This is Time2Do API Server
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
-// @contact.email soberkoder@swagger.io
+// @contact.email devgunho@gmail.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host localhost:8888

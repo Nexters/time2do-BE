@@ -14,11 +14,30 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// @Summary 유저 생성하기
-// @Tag User
-// @Accept  json
-// @Produce  json
-// @Router /user [post]
+type UserCommand struct {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+}
+
+type CreateUserCommand struct {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+}
+
+type updateUserCommand struct {
+	UserName   *string `json:"userName"`
+	OnBoarding *bool   `json:"onBoarding"`
+}
+
+type ErrorResponse struct {
+	Message string `json:"message"`
+}
+
+// @Summary 유저 생성
+// @Accept json
+// @Produce json
+// @Param user body CreateUserCommand true "User credentials"
+// @Router /users [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)
 	var command CreateUserCommand
@@ -47,16 +66,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(*user)
 }
 
-type CreateUserCommand struct {
-	UserName string `json:"userName"`
-	Password string `json:"password"`
-}
-
-// @Summary 유저 ID 로 조회하기
-// @Tag User
-// @Accept  json
-// @Produce  json
-// @Router /user/{id} [get]
 func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["id"]
@@ -66,11 +75,6 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(user)
 }
 
-// @Summary 아무 조건 없이 모든 User 불러오기
-// @Tag User
-// @Accept  json
-// @Produce  json
-// @Router /users [get]
 func GetAllUser(w http.ResponseWriter, _ *http.Request) {
 	var users []entity.User
 	database.Connector.Find(&users)
@@ -107,25 +111,11 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(user)
 }
 
-type updateUserCommand struct {
-	UserName   *string `json:"userName"`
-	OnBoarding *bool   `json:"onBoarding"`
-}
-
-type UserCommand struct {
-	UserName string `json:"userName"`
-	Password string `json:"password"`
-}
-
-type ErrorResponse struct {
-	Message string `json:"message"`
-}
-
-// @Summary User Login
-// @Tag User
+// @Summary 유저 로그인
 // @Accept json
 // @Produce json
-// @Param body body UserCommand true "User credentials"
+// @Param user body UserCommand true "User credentials"
+// @Failure 401 {object} ErrorResponse
 // @Router /login [post]
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)

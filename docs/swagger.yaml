@@ -1,5 +1,17 @@
 basePath: /
 definitions:
+  controller.CreateUserCommand:
+    properties:
+      password:
+        type: string
+      userName:
+        type: string
+    type: object
+  controller.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
   controller.UserCommand:
     properties:
       password:
@@ -7,35 +19,39 @@ definitions:
       userName:
         type: string
     type: object
+  entity.DateTime:
+    properties:
+      time.Time:
+        type: string
+    type: object
+  entity.ToDo:
+    properties:
+      completed:
+        type: boolean
+      completedTime:
+        $ref: '#/definitions/entity.DateTime'
+      content:
+        type: string
+      createdTime:
+        $ref: '#/definitions/entity.DateTime'
+      id:
+        type: integer
+      userId:
+        type: integer
+    type: object
 host: localhost:8888
 info:
   contact:
-    email: soberkoder@swagger.io
+    email: devgunho@gmail.com
     name: API Support
-  description: This is a sample serice for managing orders
+  description: This is Time2Do API Server
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Orders API
+  title: Swagger Time2Do API
   version: "1.0"
 paths:
-  /group:
-    post:
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses: {}
-      summary: 타이머 생성하기
-  /groups:
-    get:
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses: {}
-      summary: 그룹 조회하기
   /login:
     post:
       consumes:
@@ -43,22 +59,18 @@ paths:
       parameters:
       - description: User credentials
         in: body
-        name: body
+        name: user
         required: true
         schema:
           $ref: '#/definitions/controller.UserCommand'
       produces:
       - application/json
-      responses: {}
-      summary: User Login
-  /task:
-    post:
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses: {}
-      summary: 할일 생성하기
+      responses:
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+      summary: 유저 로그인
   /tasks:
     get:
       consumes:
@@ -66,29 +78,49 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: 아무 조건 없이 모든 ToDo 불러오기
-  /user:
+      summary: 모든 ToDo들 가져오기
+  /users:
     post:
       consumes:
       - application/json
+      parameters:
+      - description: User credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/controller.CreateUserCommand'
       produces:
       - application/json
       responses: {}
-      summary: 유저 생성하기
-  /user/{id}:
+      summary: 유저 생성
+  /users/{userId}/tasks:
     get:
       consumes:
       - application/json
+      description: userId에 해당하는 사용자의 ToDo 목록을 가져옴
+      parameters:
+      - description: 사용자 ID
+        in: path
+        name: userId
+        required: true
+        type: integer
       produces:
       - application/json
-      responses: {}
-      summary: 유저 ID 로 조회하기
-  /users:
-    get:
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses: {}
-      summary: 아무 조건 없이 모든 User 불러오기
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.ToDo'
+            type: array
+        "400":
+          description: 잘못된 사용자 ID
+          schema:
+            type: string
+        "500":
+          description: 서버 오류
+          schema:
+            type: string
+      summary: userId 로 ToDo들 가져오기
 swagger: "2.0"

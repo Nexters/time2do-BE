@@ -11,11 +11,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// @Summary 할일 생성하기
-// @Tag ToDo (Task)
-// @Accept  json
-// @Produce  json
-// @Router /task [post]
 func CreateToDos(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)
 	var commands []CreateToDoCommand
@@ -57,10 +52,9 @@ type CreateToDoCommand struct {
 	CompletedTime *DateTime `json:"completedTime"`
 }
 
-// @Summary 아무 조건 없이 모든 ToDo 불러오기
-// @Tag ToDo (Task)
-// @Accept  json
-// @Produce  json
+// @Summary 모든 ToDo들 가져오기
+// @Accept json
+// @Produce json
 // @Router /tasks [get]
 func GetAllToDo(w http.ResponseWriter, r *http.Request) {
 	var tasks []entity.ToDo
@@ -70,13 +64,45 @@ func GetAllToDo(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(tasks)
 }
 
-// @Summary ToDo ID 를 통해 ToDo 불러오기
-// @Tag ToDo (Task)
+// func GetToDoById(w http.ResponseWriter, r *http.Request) {
+// 	vars := mux.Vars(r)
+// 	key := vars["id"]
+// 	var task entity.ToDo
+// 	database.Connector.First(&task, key)
+// 	w.Header().Set("Content-Type", "application/json")
+// 	_ = json.NewEncoder(w).Encode(task)
+// }
+
+func GetToDosByUserId(userId uint) ([]entity.ToDo, error) {
+	var toDos []entity.ToDo
+	if err := database.Connector.Where("user_id = ?", userId).Find(&toDos).Error; err != nil {
+		return nil, err
+	}
+	return toDos, nil
+}
+
+// @Summary userId 로 ToDo들 가져오기
+// @Description userId에 해당하는 사용자의 ToDo 목록을 가져옴
+// @Accept json
+// @Produce json
+// @Param userId path uint true "사용자 ID"
+// @Success 200 {array} entity.ToDo
+// @Router /users/{userId}/tasks [get]
 func GetToDoById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	key := vars["id"]
-	var task entity.ToDo
-	database.Connector.First(&task, key)
+	userId, err := strconv.ParseUint(vars["userId"], 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	toDos, err := GetToDosByUserId(uint(userId))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(task)
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(toDos)
 }
