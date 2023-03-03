@@ -102,13 +102,13 @@ func toTimeBlocks(timeRecords []entity.TimeRecord, totalGroupTimers []entity.Tim
 			if timeRecord.StartTime.Between(nowDate, nextDate) {
 				duration := actualEndDate.Sub(timeRecord.StartTime)
 				totalMinutes := int(duration.Minutes())
-				hour = totalMinutes / 60
-				minute = totalMinutes % 60
+				hour += totalMinutes / 60
+				minute += totalMinutes % 60
 			} else if timeRecord.EndTime.Between(nowDate, nextDate) {
 				duration := actualEndDate.Sub(nowDate)
 				totalMinutes := int(duration.Minutes())
-				hour = totalMinutes / 60
-				minute = totalMinutes % 60
+				hour += totalMinutes / 60
+				minute += totalMinutes % 60
 			}
 		}
 
@@ -127,7 +127,7 @@ func toTimeBlocks(timeRecords []entity.TimeRecord, totalGroupTimers []entity.Tim
 					DisplayTime:       *timer.EndTime,
 					Duration:          int(timer.EndTime.Sub(timer.StartTime).Hours()),
 					ParticipantsCount: len(timer.Users),
-					Tag:               timer.Tag,
+					Tag:               *timer.Tag,
 				})
 			}
 		}

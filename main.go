@@ -52,6 +52,7 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/users", controller.CreateUser).Methods("POST")
 	router.HandleFunc("/users/{id}", controller.GetUserByID).Methods("GET")
 	router.HandleFunc("/users/{id}", controller.UpdateUser).Methods("PUT")
+	router.HandleFunc("/users/{id}/timeRecords", controller.SyncTimeRecords).Methods("POST")
 	router.HandleFunc("/users/{id}/reports", controller.ViewReport).Methods("GET")
 
 	router.HandleFunc("/login", controller.LoginUser).Methods("POST")
@@ -66,7 +67,7 @@ func initHandlers(router *mux.Router) {
 	router.HandleFunc("/timers/{invitationCode}/users/{userId}/supporting", controller.MakeSupporting).Methods("POST")
 	router.HandleFunc("/users/{userId}/timers/{timerId}/timeRecords", controller.CreateTimerRecord).Methods("POST")
 
-	router.HandleFunc("/users/{userId}/tasks", controller.CreateToDo).Methods("POST")
+	router.HandleFunc("/users/{userId}/tasks", controller.CreateToDos).Methods("POST")
 	router.HandleFunc("/tasks", controller.GetAllToDo).Methods("GET")
 	router.HandleFunc("/tasks/{id}", controller.GetToDoById).Methods("GET")
 

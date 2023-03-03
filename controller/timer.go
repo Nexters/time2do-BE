@@ -48,7 +48,7 @@ type createTimerCommand struct {
 	Name      string           `json:"name"`
 	MakerId   uint             `json:"makerId"`
 	Type      entity.TimerType `json:"type"`
-	Tag       string           `json:"tag"`
+	Tag       *string          `json:"tag"`
 	StartTime DateTime         `json:"startTime"`
 	EndTime   *DateTime        `json:"endTime"`
 }
@@ -191,6 +191,7 @@ func GetSupporting(w http.ResponseWriter, r *http.Request) {
 	supportings := supportingMap[invitationCode]
 	if supportings != nil {
 		_ = json.NewEncoder(w).Encode(supportings)
+		supportingMap[invitationCode] = []supporting{}
 	} else {
 		_ = json.NewEncoder(w).Encode([]supporting{})
 	}
@@ -211,6 +212,75 @@ func MakeSupporting(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+}
+
+func SyncTimeRecords(w http.ResponseWriter, r *http.Request) {
+	requestBody, _ := io.ReadAll(r.Body)
+	var commands []SyncTimerRecordCommand
+	_ = json.Unmarshal(requestBody, &commands)
+
+	if len(commands) == 0 {
+		return
+	}
+
+	vars := mux.Vars(r)
+	userId := vars["id"]
+	uIntUserId, _ := strconv.ParseUint(userId, 10, 32)
+	id := uint(uIntUserId)
+
+	user := entity.User{Id: &id}
+	database.Connector.First(&user)
+
+	var startTime *DateTime
+	var endTime DateTime
+	localTimerIdsByTimerName := make(map[uint]string)
+	for _, command := range commands {
+		if startTime == nil {
+			startTime = &command.StartTime
+		} else {
+			minTime := (*startTime).Min(command.StartTime)
+			startTime = &minTime
+		}
+		endTime = endTime.Max(command.EndTime)
+		localTimerIdsByTimerName[command.TimerId] = command.TimerName
+	}
+
+	var timers []entity.Timer
+	timerIdsByLocalTimerId := make(map[uint]uint)
+	for timerId, timerName := range localTimerIdsByTimerName {
+		timer := entity.Timer{
+			Name:      timerName,
+			MakerId:   id,
+			Type:      entity.Personal,
+			StartTime: *startTime,
+			EndTime:   &endTime,
+		}
+		timers = append(timers, timer)
+
+		// TODO: 중복 예외처리
+		database.Connector.Create(&timer)
+		timerIdsByLocalTimerId[timerId] = *timer.Id
+	}
+
+	database.Connector.CreateInBatches(&timers, len(timers))
+
+	var timeRecords []entity.TimeRecord
+	for _, timeRecord := range commands {
+		timeRecords = append(timeRecords, entity.TimeRecord{TimerId: timerIdsByLocalTimerId[timeRecord.TimerId], UserId: id, StartTime: timeRecord.StartTime, EndTime: timeRecord.EndTime})
+	}
+
+	database.Connector.CreateInBatches(&timeRecords, len(timeRecords))
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	_ = json.NewEncoder(w).Encode(timeRecords)
+}
+
+type SyncTimerRecordCommand struct {
+	TimerName string   `json:"timerName"`
+	TimerId   uint     `json:"timerId"`
+	StartTime DateTime `json:"startTime"`
+	EndTime   DateTime `json:"endTime"`
 }
 
 type Participant struct {
