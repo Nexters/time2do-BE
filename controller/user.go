@@ -75,6 +75,10 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(user)
 }
 
+// @Summary 유저 전부 조회
+// @Accept json
+// @Produce json
+// @Router /users [get]
 func GetAllUser(w http.ResponseWriter, _ *http.Request) {
 	var users []entity.User
 	database.Connector.Find(&users)
