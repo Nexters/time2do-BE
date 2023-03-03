@@ -82,6 +82,8 @@ type TimeBlock struct {
 type GroupTimer struct {
 	Name              string   `json:"name"`
 	DisplayTime       DateTime `json:"displayTime"`
+	StartTime         DateTime `json:"startTime"`
+	EndTime           DateTime `json:"endTime"`
 	Duration          int      `json:"duration"`
 	ParticipantsCount int      `json:"participantsCount"`
 	Tag               string   `json:"tag"`
@@ -128,6 +130,8 @@ func toTimeBlocks(timeRecords []entity.TimeRecord, totalGroupTimers []entity.Tim
 					Duration:          int(timer.EndTime.Sub(timer.StartTime).Hours()),
 					ParticipantsCount: len(timer.Users),
 					Tag:               *timer.Tag,
+					StartTime:         timer.StartTime,
+					EndTime:           *timer.EndTime,
 				})
 			}
 		}
