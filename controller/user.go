@@ -14,10 +14,29 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type UserCommand struct {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+}
+
+type CreateUserCommand struct {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+}
+
+type updateUserCommand struct {
+	UserName   *string `json:"userName"`
+	OnBoarding *bool   `json:"onBoarding"`
+}
+
+type ErrorResponse struct {
+	Message string `json:"message"`
+}
+
 // @Summary 유저 생성
 // @Accept json
 // @Produce json
-// @Param user body CreateUserCommand true User credentials"
+// @Param user body CreateUserCommand true "User credentials"
 // @Router /users [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := io.ReadAll(r.Body)
@@ -45,11 +64,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(*user)
-}
-
-type CreateUserCommand struct {
-	UserName string `json:"userName"`
-	Password string `json:"password"`
 }
 
 func GetUserByID(w http.ResponseWriter, r *http.Request) {
@@ -95,20 +109,6 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(user)
-}
-
-type updateUserCommand struct {
-	UserName   *string `json:"userName"`
-	OnBoarding *bool   `json:"onBoarding"`
-}
-
-type UserCommand struct {
-	UserName string `json:"userName"`
-	Password string `json:"password"`
-}
-
-type ErrorResponse struct {
-	Message string `json:"message"`
 }
 
 // @Summary 유저 로그인

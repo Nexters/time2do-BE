@@ -47,6 +47,18 @@
                 }
             }
         },
+        "/tasks": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "모든 ToDo들 가져오기",
+                "responses": {}
+            }
+        },
         "/users": {
             "post": {
                 "consumes": [
@@ -68,6 +80,50 @@
                     }
                 ],
                 "responses": {}
+            }
+        },
+        "/users/{userId}/tasks": {
+            "get": {
+                "description": "userId에 해당하는 사용자의 ToDo 목록을 가져옴",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "userId 로 ToDo들 가져오기",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "사용자 ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.ToDo"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "잘못된 사용자 ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "서버 오류",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         }
     },
@@ -99,6 +155,37 @@
                 },
                 "userName": {
                     "type": "string"
+                }
+            }
+        },
+        "entity.DateTime": {
+            "type": "object",
+            "properties": {
+                "time.Time": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.ToDo": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "boolean"
+                },
+                "completedTime": {
+                    "$ref": "#/definitions/entity.DateTime"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "createdTime": {
+                    "$ref": "#/definitions/entity.DateTime"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
                 }
             }
         }

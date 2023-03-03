@@ -52,6 +52,10 @@ type CreateToDoCommand struct {
 	CompletedTime *DateTime `json:"completedTime"`
 }
 
+// @Summary 모든 ToDo들 가져오기
+// @Accept json
+// @Produce json
+// @Router /tasks [get]
 func GetAllToDo(w http.ResponseWriter, r *http.Request) {
 	var tasks []entity.ToDo
 	database.Connector.Find(&tasks)
@@ -77,6 +81,13 @@ func GetToDosByUserId(userId uint) ([]entity.ToDo, error) {
 	return toDos, nil
 }
 
+// @Summary userId 로 ToDo들 가져오기
+// @Description userId에 해당하는 사용자의 ToDo 목록을 가져옴
+// @Accept json
+// @Produce json
+// @Param userId path uint true "사용자 ID"
+// @Success 200 {array} entity.ToDo
+// @Router /users/{userId}/tasks [get]
 func GetToDoById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userId, err := strconv.ParseUint(vars["userId"], 10, 64)
