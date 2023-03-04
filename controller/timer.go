@@ -198,7 +198,6 @@ func GetSupporting(w http.ResponseWriter, r *http.Request) {
 	supportings := supportingMap[invitationCode]
 	if supportings != nil {
 		_ = json.NewEncoder(w).Encode(supportings)
-		delete(supportingMap, invitationCode)
 	} else {
 		_ = json.NewEncoder(w).Encode([]supporting{})
 	}
