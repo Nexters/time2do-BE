@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -197,6 +198,7 @@ func GetSupporting(w http.ResponseWriter, r *http.Request) {
 	supportings := supportingMap[invitationCode]
 	if supportings != nil {
 		_ = json.NewEncoder(w).Encode(supportings)
+		log.Println("[Debug] : ", supportingMap)
 		delete(supportingMap, invitationCode)
 	} else {
 		_ = json.NewEncoder(w).Encode([]supporting{})
